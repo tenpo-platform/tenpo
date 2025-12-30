@@ -73,25 +73,25 @@ Also added feature flag to disable Sentry entirely via `NEXT_PUBLIC_ENABLE_ANALY
 
 ---
 
-### 4. Missing Security Headers
+### 4. Missing Security Headers - FIXED
 
 **Location:** `next.config.ts`
 
-**Risk:** Vulnerable to clickjacking, MIME sniffing, and XSS attacks.
+**Status:** Resolved
 
-**Recommendation:** Add security headers:
+**Fix Applied:**
 ```typescript
 const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/(.*)',
+        source: "/(.*)",
         headers: [
-          { key: 'X-Frame-Options', value: 'DENY' },
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'X-XSS-Protection', value: '1; mode=block' },
-          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-XSS-Protection", value: "1; mode=block" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         ],
       },
     ];
@@ -153,18 +153,21 @@ secure_password_change = true
 
 **Status:** Resolved
 
-**Fix Applied:** All three Supabase client files now validate environment variables at module load:
+**Fix Applied:** All three Supabase client files use a helper function that validates and narrows types:
 ```typescript
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl) {
-  throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL environment variable");
+function getEnvVar(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing ${name} environment variable`);
+  }
+  return value;
 }
 
-if (!supabaseAnonKey) {
-  throw new Error("Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable");
-}
+// Usage
+createBrowserClient(
+  getEnvVar("NEXT_PUBLIC_SUPABASE_URL"),
+  getEnvVar("NEXT_PUBLIC_SUPABASE_ANON_KEY")
+);
 ```
 
 ---
@@ -185,13 +188,15 @@ enabled = true
 
 ---
 
-### 10. Sentry Example Page Present
+### 10. Sentry Example Page Present - REMOVED
 
 **Location:** `src/app/sentry-example-page/page.tsx`
 
+**Status:** Resolved
+
 **Risk:** Test/example pages may expose sensitive debug info in production.
 
-**Recommendation:** Remove before production deployment or add to production build exclusions.
+**Action:** Removed from codebase.
 
 ---
 
@@ -245,7 +250,7 @@ web3 = 10                # per 5 min per IP (was 30)
 | Task | Priority | Status |
 |------|----------|--------|
 | Strengthen password requirements | Critical | Done |
-| Add security headers to `next.config.ts` | High | Pending |
+| Add security headers to `next.config.ts` | High | Done |
 | Enable email confirmations | High | Done |
 | Enable CAPTCHA for auth | High | Done |
 | Enable secure password change | Medium | Done |
@@ -253,9 +258,9 @@ web3 = 10                # per 5 min per IP (was 30)
 | Add environment variable validation | Medium | Done |
 | Enable local API TLS | Medium | Done |
 | Tighten auth rate limits | Medium | Done |
-| Remove sentry-example-page | Medium | Pending |
+| Remove sentry-example-page | Medium | Done |
 | Implement CSP headers | Low | Pending |
-| Review Sentry allowed domains | Low | Pending |
+| Configure Sentry allowed domains | Low | Done (Dashboard) |
 
 ---
 
