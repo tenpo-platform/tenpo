@@ -1,0 +1,9 @@
+/* Webfont: SeriouslyNostalgicFine */@font-face {
+    font-family: 'SeriouslyNostalgicFine';
+    src: url('Seriously Nostalgic Fine.woff2') format('woff2'), /* Modern Browsers */
+         url('Seriously Nostalgic Fine.otf') format('opentype'); /* Safari, Android, iOS */
+             font-style: normal;
+    font-weight: normal;
+    text-rendering: optimizeLegibility;
+}
+

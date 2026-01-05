@@ -1,0 +1,9 @@
+/* Webfont: SeriouslyNostalgic */@font-face {
+    font-family: 'SeriouslyNostalgic';
+    src: url('Seriously Nostalgic.woff2') format('woff2'), /* Modern Browsers */
+         url('Seriously Nostalgic.otf') format('opentype'); /* Safari, Android, iOS */
+             font-style: normal;
+    font-weight: normal;
+    text-rendering: optimizeLegibility;
+}
+
