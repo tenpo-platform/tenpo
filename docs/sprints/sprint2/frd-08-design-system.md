@@ -1,5 +1,35 @@
 # FRD 8: Design System
 
+## Repository Strategy
+
+**Current:** Design system lives in the main Tenpo repo (`src/tokens/`, `src/components/ui/`, etc.)
+
+**When React Native starts (~6 months):** Convert to monorepo structure using Turborepo or Nx:
+
+```
+tenpo/
+├── apps/
+│   ├── web/              # Current Next.js app (moved here)
+│   └── mobile/           # New React Native app
+├── packages/
+│   ├── tokens/           # Shared tokens.json + Style Dictionary
+│   ├── ui-web/           # Web components (Tailwind)
+│   └── ui-native/        # RN components (StyleSheet)
+├── turbo.json
+└── package.json
+```
+
+**Key principle:** Start the RN app inside this repo from day one. Don't create a separate repo and merge later — that's painful.
+
+**Migration path:**
+1. Install Turborepo: `npx turbo init`
+2. Move current app to `apps/web/`
+3. Extract `src/tokens/` to `packages/tokens/`
+4. Create `apps/mobile/` for RN
+5. Both apps import from `@tenpo/tokens`
+
+---
+
 ## Architecture Overview
 
 ```
