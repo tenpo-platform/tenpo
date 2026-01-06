@@ -1,21 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const hostGrotesk = localFont({
+  src: "../fonts/host-grotesk/HostGrotesk-VariableFont_wght.ttf",
+  variable: "--font-host-grotesk",
+  display: "swap",
 });
 
 const seriouslyNostalgic = localFont({
-  src: "./fonts/SeriouslyNostalgicFnIt-Reg.otf",
+  src: "../fonts/seriously-nostalgic/SeriouslyNostalgicFnIt-Reg.otf",
   variable: "--font-seriously-nostalgic",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -31,9 +28,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${seriouslyNostalgic.variable} antialiased`}
+        className={`${hostGrotesk.variable} ${seriouslyNostalgic.variable} antialiased`}
       >
         {children}
+        <Toaster />
       </body>
     </html>
   );
