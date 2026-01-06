@@ -1,35 +1,5 @@
 # FRD 8: Design System
 
-## Repository Strategy
-
-**Current:** Design system lives in the main Tenpo repo (`src/tokens/`, `src/components/ui/`, etc.)
-
-**When React Native starts (~6 months):** Convert to monorepo structure using Turborepo or Nx:
-
-```
-tenpo/
-├── apps/
-│   ├── web/              # Current Next.js app (moved here)
-│   └── mobile/           # New React Native app
-├── packages/
-│   ├── tokens/           # Shared tokens.json + Style Dictionary
-│   ├── ui-web/           # Web components (Tailwind)
-│   └── ui-native/        # RN components (StyleSheet)
-├── turbo.json
-└── package.json
-```
-
-**Key principle:** Start the RN app inside this repo from day one. Don't create a separate repo and merge later — that's painful.
-
-**Migration path:**
-1. Install Turborepo: `npx turbo init`
-2. Move current app to `apps/web/`
-3. Extract `src/tokens/` to `packages/tokens/`
-4. Create `apps/mobile/` for RN
-5. Both apps import from `@tenpo/tokens`
-
----
-
 ## Architecture Overview
 
 ```
@@ -37,322 +7,430 @@ tenpo/
 │                    FIGMA (Design Source)                     │
 │         Colors, Typography, Spacing, Components              │
 └─────────────────────┬───────────────────────────────────────┘
-                      │ Export (Figma MCP or manual)
+                      │ Extract via Figma MCP
                       ▼
 ┌─────────────────────────────────────────────────────────────┐
-│              src/tokens/tokens.json                          │
-│                 (Source of Truth)                            │
+│              tailwind.config.ts                              │
+│           (Tokens as Tailwind theme)                         │
 └─────────────────────┬───────────────────────────────────────┘
-                      │ Style Dictionary build
-                      ▼
+                      │
         ┌─────────────┴─────────────┐
         ▼                           ▼
 ┌───────────────────┐    ┌───────────────────┐
-│   Web Outputs     │    │  React Native     │
-│                   │    │    Outputs        │
-│ • CSS variables   │    │                   │
-│ • Tailwind config │    │ • JS module       │
-│ • WOFF2 fonts     │    │ • OTF fonts       │
+│   shadcn/ui       │    │   MUI DataGrid    │
+│   Components      │    │   (Admin Only)    │
+│                   │    │                   │
+│ • Button, Input   │    │ • Roster tables   │
+│ • Card, Badge     │    │ • Camp lists      │
+│ • Dialog, Form    │    │ • Export/filter   │
+│ • All public UI   │    │                   │
 └───────────────────┘    └───────────────────┘
 ```
+
+### Why This Architecture
+
+| Approach | Pros | Cons |
+|----------|------|------|
+| **All MUI** | One library, feature-rich | 150-200kb JS per page, hard to match Figma |
+| **All shadcn** | Fast, customizable | DataGrid is basic (no sort/filter/export) |
+| **Hybrid (chosen)** | Best of both: fast public pages + powerful admin tables | Two mental models (minimal) |
+
+---
 
 ## File Structure
 
 ```
 src/
-├── tokens/
-│   ├── tokens.json           # Source of truth (from Figma)
-│   ├── style-dictionary.config.js
-│   └── build/                # Generated outputs (git-ignored)
-│       ├── css/
-│       │   └── variables.css
-│       ├── tailwind/
-│       │   └── tokens.js
-│       └── rn/
-│           └── tokens.js
+├── app/
+│   ├── layout.tsx              # Font setup, providers
+│   ├── globals.css             # Tailwind + shadcn CSS variables
+│   ├── page.tsx                # Landing (shadcn)
+│   ├── camps/                  # Public browse (shadcn)
+│   ├── register/               # Registration flow (shadcn)
+│   ├── dashboard/              # Parent dashboard (shadcn)
+│   └── organizer/              # Admin (shadcn + DataGrid)
+├── components/
+│   └── ui/                     # shadcn components + DataGrid wrapper
+│       ├── button.tsx
+│       ├── card.tsx
+│       ├── input.tsx
+│       ├── data-grid.tsx       # MUI DataGrid styled wrapper
+│       └── ...
 ├── fonts/
 │   ├── host-grotesk/
-│   │   ├── HostGrotesk-Regular.otf
-│   │   ├── HostGrotesk-Medium.otf
-│   │   ├── HostGrotesk-Bold.otf
-│   │   └── ... (other weights)
-│   ├── seriously-nostalgic/
-│   │   └── SeriouslyNostalgic-Regular.otf
-│   └── web/                  # Generated WOFF2 files
-│       ├── HostGrotesk-Regular.woff2
-│       └── ...
+│   │   ├── HostGrotesk-Regular.woff2
+│   │   ├── HostGrotesk-Medium.woff2
+│   │   └── HostGrotesk-Bold.woff2
+│   └── seriously-nostalgic/
+│       └── SeriouslyNostalgic.woff2
 ├── icons/
-│   ├── svg/                  # Raw SVGs from Streamline
-│   │   ├── arrow-left.svg
-│   │   ├── check.svg
-│   │   └── ...
-│   └── components/           # Generated React components
-│       ├── ArrowLeft.tsx
-│       ├── Check.tsx
-│       └── index.ts
-├── components/
-│   └── ui/
-│       ├── Button.tsx
-│       ├── Input.tsx
-│       ├── Card.tsx
-│       ├── Badge.tsx
-│       └── index.ts
-└── layouts/
-    ├── AppShell.tsx
-    ├── DashboardLayout.tsx
-    ├── MarketingLayout.tsx
-    └── AuthLayout.tsx
+│   ├── svg/                    # Raw SVGs from Streamline
+│   └── components/             # Generated React components (optional)
+└── lib/
+    └── utils.ts                # cn() helper from shadcn
 ```
 
-## Token Structure
+---
 
-### tokens.json Schema
+## Design Tokens
 
-```json
-{
-  "color": {
-    "brand": {
-      "primary": { "value": "{color.green.500}" },
-      "secondary": { "value": "{color.gray.900}" }
+### Color Palette
+
+Uses **functional names** (shadcn convention) for AI/dev familiarity, with brand aliases.
+
+```typescript
+// tailwind.config.ts
+const config: Config = {
+  theme: {
+    extend: {
+      colors: {
+        // === FUNCTIONAL (primary - use these) ===
+        background: '#F9F7F2',
+        foreground: '#1F1F1F',
+
+        primary: {
+          DEFAULT: '#043625',
+          foreground: '#FFFFFF',
+        },
+        secondary: {
+          DEFAULT: '#EFEEEA',
+          foreground: '#1F1F1F',
+        },
+        muted: {
+          DEFAULT: '#EFEEEA',
+          foreground: '#B1AB9B',
+        },
+        accent: {
+          DEFAULT: '#EBE3C6',
+          foreground: '#1F1F1F',
+        },
+        destructive: {
+          DEFAULT: '#F000A7',
+          foreground: '#FFFFFF',
+        },
+
+        border: '#C0C9D6',
+        input: '#C0C9D6',
+        ring: '#043625',
+
+        card: {
+          DEFAULT: '#FFFFFF',
+          foreground: '#1F1F1F',
+        },
+        popover: {
+          DEFAULT: '#FFFFFF',
+          foreground: '#1F1F1F',
+        },
+
+        // === STATUS ===
+        warning: {
+          DEFAULT: '#EF6C00',
+          foreground: '#984500',
+          muted: '#F0ECDD',
+        },
+        success: {
+          DEFAULT: '#0A7F10',
+          foreground: '#006D06',
+          muted: '#E6EB8A',
+        },
+        error: {
+          DEFAULT: '#F000A7',
+          foreground: '#AE0079',
+          muted: '#F7E2F0',
+        },
+        info: {
+          DEFAULT: '#0014AE',
+          foreground: '#002C9A',
+          muted: '#DEEBFF',
+        },
+
+        // === BRAND ALIASES (optional, for Figma reference) ===
+        'pitch-green': '#043625',
+        'obsidian': '#1F1F1F',
+        'chalk': '#EFEEEA',
+        'sand': '#B1AB9B',
+        'steel': '#C0C9D6',
+        'mist': '#E1DADA',
+        'vapor': '#D9DDE0',
+        'cloud': '#DEEBFF',
+        'day': '#EBE3C6',
+        'midnight': '#0B1E3C',
+        'carbon': '#392F36',
+      },
     },
-    "background": {
-      "primary": { "value": "#ffffff" },
-      "secondary": { "value": "{color.gray.50}" },
-      "tertiary": { "value": "{color.gray.100}" }
-    },
-    "text": {
-      "primary": { "value": "{color.gray.900}" },
-      "secondary": { "value": "{color.gray.600}" },
-      "tertiary": { "value": "{color.gray.400}" },
-      "inverse": { "value": "#ffffff" }
-    },
-    "border": {
-      "default": { "value": "{color.gray.200}" },
-      "focus": { "value": "{color.brand.primary}" }
-    },
-    "status": {
-      "success": { "value": "{color.green.500}" },
-      "error": { "value": "{color.red.500}" },
-      "warning": { "value": "{color.amber.500}" },
-      "info": { "value": "{color.blue.500}" }
-    },
-    "green": {
-      "50": { "value": "#f0fdf4" },
-      "100": { "value": "#dcfce7" },
-      "200": { "value": "#bbf7d0" },
-      "300": { "value": "#86efac" },
-      "400": { "value": "#4ade80" },
-      "500": { "value": "#22c55e" },
-      "600": { "value": "#16a34a" },
-      "700": { "value": "#15803d" },
-      "800": { "value": "#166534" },
-      "900": { "value": "#14532d" }
-    },
-    "gray": {
-      "50": { "value": "#f9fafb" },
-      "100": { "value": "#f3f4f6" },
-      "200": { "value": "#e5e7eb" },
-      "300": { "value": "#d1d5db" },
-      "400": { "value": "#9ca3af" },
-      "500": { "value": "#6b7280" },
-      "600": { "value": "#4b5563" },
-      "700": { "value": "#374151" },
-      "800": { "value": "#1f2937" },
-      "900": { "value": "#111827" }
-    },
-    "red": {
-      "500": { "value": "#ef4444" },
-      "600": { "value": "#dc2626" }
-    },
-    "amber": {
-      "500": { "value": "#f59e0b" }
-    },
-    "blue": {
-      "500": { "value": "#3b82f6" }
-    }
   },
-  "typography": {
-    "fontFamily": {
-      "sans": { "value": "Host Grotesk, system-ui, sans-serif" },
-      "display": { "value": "Seriously Nostalgic, Host Grotesk, sans-serif" }
-    },
-    "fontSize": {
-      "xs": { "value": "0.75rem" },
-      "sm": { "value": "0.875rem" },
-      "base": { "value": "1rem" },
-      "lg": { "value": "1.125rem" },
-      "xl": { "value": "1.25rem" },
-      "2xl": { "value": "1.5rem" },
-      "3xl": { "value": "1.875rem" },
-      "4xl": { "value": "2.25rem" },
-      "5xl": { "value": "3rem" }
-    },
-    "fontWeight": {
-      "normal": { "value": "400" },
-      "medium": { "value": "500" },
-      "semibold": { "value": "600" },
-      "bold": { "value": "700" }
-    },
-    "lineHeight": {
-      "tight": { "value": "1.25" },
-      "normal": { "value": "1.5" },
-      "relaxed": { "value": "1.75" }
-    }
-  },
-  "spacing": {
-    "0": { "value": "0" },
-    "1": { "value": "0.25rem" },
-    "2": { "value": "0.5rem" },
-    "3": { "value": "0.75rem" },
-    "4": { "value": "1rem" },
-    "5": { "value": "1.25rem" },
-    "6": { "value": "1.5rem" },
-    "8": { "value": "2rem" },
-    "10": { "value": "2.5rem" },
-    "12": { "value": "3rem" },
-    "16": { "value": "4rem" },
-    "20": { "value": "5rem" },
-    "24": { "value": "6rem" }
-  },
-  "borderRadius": {
-    "none": { "value": "0" },
-    "sm": { "value": "0.25rem" },
-    "md": { "value": "0.375rem" },
-    "lg": { "value": "0.5rem" },
-    "xl": { "value": "0.75rem" },
-    "2xl": { "value": "1rem" },
-    "full": { "value": "9999px" }
-  },
-  "shadow": {
-    "sm": { "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)" },
-    "md": { "value": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)" },
-    "lg": { "value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)" },
-    "xl": { "value": "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)" }
-  }
 }
 ```
 
-**Note:** The values above are placeholders. Actual values will be extracted from Figma via MCP.
+### Color Mapping Reference
 
-## Style Dictionary Configuration
+| Functional Name | Brand Name | Hex | Usage |
+|-----------------|------------|-----|-------|
+| `background` | Bleached Sand | #F9F7F2 | Page backgrounds |
+| `foreground` | Obsidian | #1F1F1F | Primary text |
+| `primary` | Pitch Green | #043625 | Buttons, links, accents |
+| `secondary` | Chalk | #EFEEEA | Secondary buttons |
+| `muted` | Chalk | #EFEEEA | Subtle backgrounds |
+| `muted-foreground` | Sand | #B1AB9B | Subtle text |
+| `accent` | Day | #EBE3C6 | Highlights |
+| `destructive` | Error | #F000A7 | Delete, errors (magenta) |
+| `border` | Steel | #C0C9D6 | Borders, dividers |
+| `card` | White | #FFFFFF | Card backgrounds |
 
-```javascript
-// src/tokens/style-dictionary.config.js
+### Spacing Scale
 
-module.exports = {
-  source: ['src/tokens/tokens.json'],
-  platforms: {
-    css: {
-      transformGroup: 'css',
-      buildPath: 'src/tokens/build/css/',
-      files: [{
-        destination: 'variables.css',
-        format: 'css/variables',
-        options: {
-          selector: ':root'
-        }
-      }]
-    },
-    tailwind: {
-      transformGroup: 'js',
-      buildPath: 'src/tokens/build/tailwind/',
-      files: [{
-        destination: 'tokens.js',
-        format: 'javascript/es6'
-      }]
-    },
-    reactNative: {
-      transformGroup: 'react-native',
-      buildPath: 'src/tokens/build/rn/',
-      files: [{
-        destination: 'tokens.js',
-        format: 'javascript/es6'
-      }]
-    }
-  }
-};
-```
+Mapped to Tailwind conventions so `p-4` = 16px as expected.
 
-## Build Commands
-
-```json
-// package.json scripts
-
-{
-  "scripts": {
-    "tokens:build": "style-dictionary build --config src/tokens/style-dictionary.config.js",
-    "tokens:clean": "rm -rf src/tokens/build",
-    "fonts:convert": "node scripts/convert-fonts.js",
-    "icons:generate": "svgr src/icons/svg --out-dir src/icons/components --typescript"
-  }
+```typescript
+// tailwind.config.ts - spacing (extends Tailwind defaults)
+spacing: {
+  '0': '0px',
+  '1': '4px',
+  '2': '8px',    // Figma Spacing 1
+  '3': '12px',
+  '4': '16px',   // Figma Spacing 2
+  '5': '20px',
+  '6': '24px',   // Figma Spacing 3
+  '8': '32px',   // Figma Spacing 4
+  '10': '40px',  // Figma Spacing 5
+  '12': '48px',  // Figma Spacing 6
+  '14': '56px',  // Figma Spacing 7
+  '16': '64px',  // Figma Spacing 8
 }
 ```
+
+| Figma Token | Tailwind Key | Value |
+|-------------|--------------|-------|
+| Spacing 1 | `2` | 8px |
+| Spacing 2 | `4` | 16px |
+| Spacing 3 | `6` | 24px |
+| Spacing 4 | `8` | 32px |
+| Spacing 5 | `10` | 40px |
+| Spacing 6 | `12` | 48px |
+| Spacing 7 | `14` | 56px |
+| Spacing 8 | `16` | 64px |
+
+### Corner Radius
+
+```typescript
+// tailwind.config.ts - borderRadius
+borderRadius: {
+  'none': '0px',
+  'sm': '12px',   // Small
+  'md': '24px',   // Medium
+  'lg': '32px',   // Large
+  'full': '9999px',
+}
+```
+
+Note: These are larger than typical (intentional brand choice for rounded, soft aesthetic).
+
+### Typography Scale (Host Grotesk)
+
+| Style | Size | Line Height | Letter Spacing | Weight |
+|-------|------|-------------|----------------|--------|
+| h1 | 96px | — | — | 400 |
+| h2 | 60px | — | — | 400 |
+| h3 | 48px | — | — | 400 |
+| h4 | 34px | — | — | 400 |
+| h5 | 24px | — | — | 400 |
+| h6 | 20px | 160% | 0.15px | 500 |
+| subtitle1 | 16px | — | — | 400 |
+| subtitle2 | 14px | — | — | 400 |
+| body1 | 16px | — | — | 400 |
+| body2 | 14px | 143% | 0.17px | 400 |
+| caption | 12px | 166% | 0.4px | 400 |
+| overline | 12px | — | — | 400 |
+
+### Typography Scale (Seriously Nostalgic)
+
+| Style | Size | Usage |
+|-------|------|-------|
+| h1 | 96px | Hero headlines |
+| h2 | 60px | Section headlines |
+
+*Used sparingly for brand moments and display text.*
+
+### Figma Token Frames
+
+| Token Type | Node ID | Status |
+|------------|---------|--------|
+| App Colors | `105:1268` | Extracted |
+| Warning Colors | `113:3720` | Extracted |
+| Success Colors | `113:3768` | Extracted |
+| Info Colors | `113:3816` | Extracted |
+| Advice Colors | `113:3864` | Extracted |
+| Spacing | `105:1808` | Extracted |
+| Corner Radius | `105:1786` | Extracted |
+| Typography (Host Grotesk) | `105:1536` | Extracted |
+| Typography (Seriously Nostalgic) | `105:1614` | Extracted |
+
+---
 
 ## Fonts
 
 ### Font Roles
 
-| Font | Usage | Weights Needed |
-|------|-------|----------------|
-| Host Grotesk | Body text, UI elements, buttons, forms | Regular (400), Medium (500), Semibold (600), Bold (700) |
-| Seriously Nostalgic | Headlines, hero text, brand moments | Regular (400) |
+| Font | Usage | Weights |
+|------|-------|---------|
+| Host Grotesk | Body text, UI elements, buttons, forms | 400, 500, 700 |
+| Seriously Nostalgic | Headlines, hero text, brand moments | TBD |
 
-### Web Implementation
+### Implementation
+
+```typescript
+// src/app/layout.tsx
+import localFont from 'next/font/local'
+
+const hostGrotesk = localFont({
+  src: [
+    { path: '../fonts/host-grotesk/HostGrotesk-Regular.woff2', weight: '400' },
+    { path: '../fonts/host-grotesk/HostGrotesk-Medium.woff2', weight: '500' },
+    { path: '../fonts/host-grotesk/HostGrotesk-Bold.woff2', weight: '700' },
+  ],
+  variable: '--font-sans',
+})
+
+const seriouslyNostalgic = localFont({
+  src: '../fonts/seriously-nostalgic/SeriouslyNostalgic.woff2',
+  variable: '--font-display',
+})
+
+export default function RootLayout({ children }) {
+  return (
+    <html className={`${hostGrotesk.variable} ${seriouslyNostalgic.variable}`}>
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+### Font Files
+
+Source: `docs/ds/fonts/` (OTF files)
+Target: `src/fonts/` (WOFF2 files after conversion)
+
+**Warning:** Font licensing unconfirmed. See `docs/warning.md`.
+
+---
+
+## shadcn/ui Setup
+
+### Installation
+
+```bash
+npx shadcn@latest init
+```
+
+Configuration choices:
+- TypeScript: Yes
+- Style: Default
+- Base color: Slate (overridden with tokens)
+- CSS variables: Yes
+
+### Components to Add
+
+```bash
+npx shadcn@latest add button input card badge alert dialog table tabs form toast dropdown-menu avatar separator select textarea
+```
+
+### Theme Customization
 
 ```css
 /* src/app/globals.css */
-
-@font-face {
-  font-family: 'Host Grotesk';
-  src: url('/fonts/web/HostGrotesk-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Host Grotesk';
-  src: url('/fonts/web/HostGrotesk-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Host Grotesk';
-  src: url('/fonts/web/HostGrotesk-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Seriously Nostalgic';
-  src: url('/fonts/web/SeriouslyNostalgic-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+@layer base {
+  :root {
+    --background: 39 33% 96%;        /* #F9F7F2 */
+    --foreground: 0 0% 12%;          /* #1F1F1F */
+    --primary: 160 89% 11%;          /* #043625 */
+    --primary-foreground: 0 0% 100%;
+    /* Map all tokens to CSS variables */
+  }
 }
 ```
 
-### React Native Implementation
+---
 
-```javascript
-// Link fonts in react-native.config.js (when RN project exists)
+## MUI DataGrid (Admin Only)
 
-module.exports = {
-  assets: ['./src/fonts/host-grotesk', './src/fonts/seriously-nostalgic'],
-};
+### Installation
+
+```bash
+npm install @mui/x-data-grid @mui/material @emotion/react @emotion/styled
 ```
+
+### Styled Wrapper
+
+```typescript
+// src/components/ui/data-grid.tsx
+'use client'
+
+import { DataGrid as MuiDataGrid, DataGridProps } from '@mui/x-data-grid'
+
+export function DataGrid(props: DataGridProps) {
+  return (
+    <MuiDataGrid
+      {...props}
+      sx={{
+        border: 'none',
+        fontFamily: 'var(--font-sans)',
+        '& .MuiDataGrid-columnHeaders': {
+          backgroundColor: '#F9F7F2',
+          color: '#1F1F1F',
+          fontWeight: 500,
+        },
+        '& .MuiDataGrid-row:hover': {
+          backgroundColor: '#EFEEEA',
+        },
+        '& .MuiDataGrid-cell': {
+          borderColor: '#E1DADA',
+        },
+        '& .MuiCheckbox-root': {
+          color: '#043625',
+        },
+        ...props.sx,
+      }}
+    />
+  )
+}
+```
+
+### Usage (Admin Routes Only)
+
+```typescript
+// src/app/organizer/camps/[id]/roster/page.tsx
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { DataGrid } from '@/components/ui/data-grid'
+
+export default function RosterPage() {
+  return (
+    <Card>
+      <div className="p-4 flex justify-between items-center">
+        <h1 className="text-xl font-medium">Registrations</h1>
+        <Button>Export CSV</Button>
+      </div>
+      <DataGrid
+        rows={registrations}
+        columns={columns}
+        pageSizeOptions={[10, 25, 50]}
+        checkboxSelection
+        disableRowSelectionOnClick
+      />
+    </Card>
+  )
+}
+```
+
+---
 
 ## Icons
 
 ### Workflow
 
 1. **Source:** Streamline HQ Desktop App (Pro account)
-2. **Export:** Download needed icons as SVG to `src/icons/svg/`
-3. **Generate:** Run `npm run icons:generate` to create React components
-4. **Use:** Import from `src/icons/components`
+2. **Export:** Download as SVG to `src/icons/svg/`
+3. **Use:** Import directly or generate components with SVGR
 
 ### Naming Convention
 
@@ -360,246 +438,115 @@ module.exports = {
 |-----------------|-----------|----------------|
 | Arrow Left | `arrow-left.svg` | `ArrowLeft` |
 | Check Circle | `check-circle.svg` | `CheckCircle` |
-| Menu Hamburger | `menu-hamburger.svg` | `MenuHamburger` |
 
-### Icon Component Props
+### Optional: Generate Components
 
-```typescript
-interface IconProps {
-  size?: number | string;  // Default: 24
-  color?: string;          // Default: currentColor
-  className?: string;
-}
-
-// Usage
-<ArrowLeft size={20} color="var(--color-text-primary)" />
+```bash
+npm install -D @svgr/cli
+npx svgr src/icons/svg --out-dir src/icons/components --typescript
 ```
 
-## Base Components
+---
 
-### Button
+## Repository Strategy
 
-```typescript
-// src/components/ui/Button.tsx
+**Current:** Design system lives in the main Tenpo repo.
 
-interface ButtonProps {
-  variant: 'primary' | 'secondary' | 'ghost' | 'danger';
-  size: 'sm' | 'md' | 'lg';
-  disabled?: boolean;
-  loading?: boolean;
-  leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
-  children: React.ReactNode;
-  onClick?: () => void;
-  type?: 'button' | 'submit';
-  fullWidth?: boolean;
-}
+**When React Native starts (~6 months):** Convert to monorepo:
 
-// Variant styles (using CSS variables from tokens)
-const variants = {
-  primary: 'bg-[var(--color-brand-primary)] text-white hover:opacity-90',
-  secondary: 'bg-white border border-[var(--color-border-default)] text-[var(--color-text-primary)] hover:bg-[var(--color-background-secondary)]',
-  ghost: 'bg-transparent text-[var(--color-text-secondary)] hover:bg-[var(--color-background-secondary)]',
-  danger: 'bg-[var(--color-status-error)] text-white hover:opacity-90',
-};
-
-const sizes = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-base',
-  lg: 'px-6 py-3 text-lg',
-};
+```
+tenpo/
+├── apps/
+│   ├── web/              # Current Next.js app
+│   └── mobile/           # React Native app
+├── packages/
+│   ├── tokens/           # Shared design tokens
+│   ├── ui-web/           # Web components
+│   └── ui-native/        # RN components
+└── turbo.json
 ```
 
-### Input
+**Migration path:**
+1. Install Turborepo: `npx turbo init`
+2. Move current app to `apps/web/`
+3. Extract tokens to `packages/tokens/`
+4. Create `apps/mobile/` for RN
 
-```typescript
-// src/components/ui/Input.tsx
+---
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  error?: string;
-  hint?: string;
-}
+## Bundle Size Targets
 
-// States
-// Default: border-[var(--color-border-default)]
-// Focus: border-[var(--color-border-focus)] ring-2 ring-[var(--color-brand-primary)]/20
-// Error: border-[var(--color-status-error)]
-// Disabled: bg-[var(--color-background-tertiary)] cursor-not-allowed
-```
+| Route | Components | Target JS |
+|-------|------------|-----------|
+| `/` (landing) | shadcn only | < 40kb |
+| `/camps` (browse) | shadcn only | < 45kb |
+| `/register` (checkout) | shadcn only | < 50kb |
+| `/dashboard` (parent) | shadcn only | < 50kb |
+| `/organizer/*` (admin) | shadcn + DataGrid | < 120kb |
 
-### Card
+Public pages never load MUI. Next.js handles lazy loading for admin routes.
 
-```typescript
-// src/components/ui/Card.tsx
+---
 
-interface CardProps {
-  children: React.ReactNode;
-  padding?: 'none' | 'sm' | 'md' | 'lg';
-  hover?: boolean;
-  onClick?: () => void;
-}
+## Implementation Checklist
 
-// Base: bg-white rounded-lg border border-[var(--color-border-default)] shadow-sm
-// Hover (if interactive): hover:shadow-md hover:border-[var(--color-brand-primary)] transition-all cursor-pointer
-```
+### Phase 1: Foundation
+- [ ] Configure `tailwind.config.ts` with all tokens (colors, spacing, radius, typography)
+- [ ] Set up shadcn/ui with `npx shadcn@latest init`
+- [ ] Copy font files to `src/fonts/` and convert to WOFF2
+- [ ] Configure fonts in `layout.tsx`
+- [ ] Update `globals.css` with CSS variables
 
-### Badge
+### Phase 2: Components
+- [ ] Add shadcn components (button, input, card, badge, etc.)
+- [ ] Customize component styles to match Figma
+- [ ] Create MUI DataGrid wrapper
 
-```typescript
-// src/components/ui/Badge.tsx
+### Phase 3: Verification
+- [ ] All color tokens match Figma
+- [ ] Spacing scale works (8px increments)
+- [ ] Border radius matches (12, 24, 32px)
+- [ ] Typography scale renders correctly
+- [ ] Fonts load without FOUT/FOIT
+- [ ] Button, Input, Card render correctly
+- [ ] DataGrid wrapper matches theme
+- [ ] Public pages < 50kb JS
 
-interface BadgeProps {
-  variant: 'default' | 'success' | 'warning' | 'error' | 'info';
-  children: React.ReactNode;
-}
+### Token Extraction Status
 
-const variants = {
-  default: 'bg-[var(--color-background-tertiary)] text-[var(--color-text-secondary)]',
-  success: 'bg-green-100 text-green-800',
-  warning: 'bg-amber-100 text-amber-800',
-  error: 'bg-red-100 text-red-800',
-  info: 'bg-blue-100 text-blue-800',
-};
-```
+| Token | Status |
+|-------|--------|
+| Colors | Complete |
+| Spacing | Complete (8px increments: 8-64px) |
+| Corner Radius | Complete (12, 24, 32px) |
+| Typography | Complete (12 styles) |
+| Shadows | Pending (no Figma frame) |
 
-## Layout Components
-
-### AppShell
-
-```typescript
-// src/layouts/AppShell.tsx
-
-interface AppShellProps {
-  children: React.ReactNode;
-  header?: React.ReactNode;
-  sidebar?: React.ReactNode;
-  footer?: React.ReactNode;
-}
-
-// Structure
-<div className="min-h-screen flex flex-col">
-  {header}
-  <div className="flex flex-1">
-    {sidebar}
-    <main className="flex-1">{children}</main>
-  </div>
-  {footer}
-</div>
-```
-
-### DashboardLayout
-
-```typescript
-// For authenticated routes: /organizer/*, /dashboard/*
-
-// Features:
-// - Collapsible sidebar with navigation
-// - Header with user menu
-// - Breadcrumbs
-// - Max-width content area
-```
-
-### MarketingLayout
-
-```typescript
-// For public routes: /, /camps, /camps/[id]
-
-// Features:
-// - Top navigation bar
-// - Full-width hero sections
-// - Footer with links
-```
-
-### AuthLayout
-
-```typescript
-// For auth routes: /login, /signup, /forgot-password
-
-// Features:
-// - Centered card
-// - Logo above card
-// - Minimal chrome
-// - Optional background pattern/image
-```
-
-## Tailwind Integration
-
-```typescript
-// tailwind.config.ts
-
-import type { Config } from 'tailwindcss';
-import tokens from './src/tokens/build/tailwind/tokens';
-
-const config: Config = {
-  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
-  theme: {
-    extend: {
-      colors: tokens.color,
-      fontFamily: {
-        sans: [tokens.typography.fontFamily.sans],
-        display: [tokens.typography.fontFamily.display],
-      },
-      fontSize: tokens.typography.fontSize,
-      spacing: tokens.spacing,
-      borderRadius: tokens.borderRadius,
-      boxShadow: tokens.shadow,
-    },
-  },
-  plugins: [],
-};
-
-export default config;
-```
-
-## Maintenance Workflow
-
-### Updating Tokens
-
-1. Update design in Figma
-2. Export tokens via Figma MCP or plugin
-3. Replace `src/tokens/tokens.json`
-4. Run `npm run tokens:build`
-5. Verify changes in app
-6. Commit all changes
-
-### Adding Icons
-
-1. Open Streamline HQ desktop app
-2. Find icon, download as SVG
-3. Save to `src/icons/svg/` with kebab-case name
-4. Run `npm run icons:generate`
-5. Import and use new component
-
-### Adding Font Weights
-
-1. Add OTF file to appropriate `src/fonts/` subfolder
-2. Run `npm run fonts:convert` to generate WOFF2
-3. Add `@font-face` rule to `globals.css`
-4. Update tokens.json if needed
+---
 
 ## Dependencies
 
 ```json
 {
+  "dependencies": {
+    "@mui/x-data-grid": "^7.x",
+    "@mui/material": "^6.x",
+    "@emotion/react": "^11.x",
+    "@emotion/styled": "^11.x"
+  },
   "devDependencies": {
-    "style-dictionary": "^3.9.0",
-    "@svgr/cli": "^8.1.0"
+    "@svgr/cli": "^8.x"
   }
 }
 ```
 
-## Verification Checklist
+Note: shadcn/ui components are copied into the codebase, not installed as a dependency.
 
-- [ ] tokens.json populated with values from Figma
-- [ ] Style Dictionary builds without errors
-- [ ] CSS variables available in browser dev tools
-- [ ] Fonts loading correctly (no FOUT/FOIT issues)
-- [ ] All icon SVGs converted to components
-- [ ] Button renders all variants correctly
-- [ ] Input shows all states (default, focus, error, disabled)
-- [ ] Card hover effect works
-- [ ] Badge variants display correctly
-- [ ] DashboardLayout renders with sidebar
-- [ ] MarketingLayout renders with header/footer
-- [ ] AuthLayout centers content correctly
+---
+
+## Notes
+
+- Error colors are pink/magenta (#F000A7), not red — intentional brand choice
+- Tailwind CSS 4 syntax differs from v3 — check docs if issues arise
+- React 19 is in use — be aware of pattern changes
+- Font licensing needs verification before launch
