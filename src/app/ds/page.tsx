@@ -376,7 +376,7 @@ export default function DesignSystemDemo() {
       <aside className="fixed left-0 top-0 h-screen w-56 border-r bg-background p-6 overflow-y-auto hidden lg:block">
         <div className="mb-8">
           <Image
-            src="/images/logo/wordmark/wordmark-light.svg"
+            src="/images/logo/wordmark/wordmark-carbon.svg"
             alt="Tenpo"
             width={120}
             height={42}
@@ -392,7 +392,7 @@ export default function DesignSystemDemo() {
           {/* Header */}
           <header>
             <Image
-              src="/images/logo/wordmark/wordmark-light.svg"
+              src="/images/logo/wordmark/wordmark-carbon.svg"
               alt="Tenpo"
               width={200}
               height={70}
