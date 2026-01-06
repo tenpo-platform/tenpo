@@ -45,16 +45,15 @@ function Calendar({
           // Hover - uses secondary (Day cream) per DS
           "hover:bg-secondary hover:text-secondary-foreground",
           // Focus - uses ring (orange) per DS
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          // Selected state - primary green
-          "aria-selected:bg-primary aria-selected:text-primary-foreground aria-selected:hover:opacity-90"
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         ),
-        range_start: "rounded-l-sm",
-        range_end: "rounded-r-sm",
-        range_middle: "bg-primary/20 text-foreground rounded-none",
-        selected: "",
-        // Today - only show ring/border, not background (so selected can override)
-        today: "[&>button]:ring-1 [&>button]:ring-primary",
+        range_start: "[&>button]:rounded-l-sm [&>button]:rounded-r-none",
+        range_end: "[&>button]:rounded-r-sm [&>button]:rounded-l-none",
+        range_middle: "[&>button]:bg-primary/20 [&>button]:text-foreground [&>button]:rounded-none",
+        // Selected - primary green background
+        selected: "[&>button]:bg-primary [&>button]:text-primary-foreground [&>button]:hover:bg-primary [&>button]:hover:opacity-90",
+        // Today - ring indicator (doesn't conflict with selected since selected overrides button bg)
+        today: "[&>button]:ring-1 [&>button]:ring-primary/50",
         outside: "text-muted-foreground/40",
         disabled: "text-muted-foreground/30 pointer-events-none",
         hidden: "invisible",
