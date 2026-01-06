@@ -294,7 +294,12 @@ function ColorSwatch({ name, className, textClass }: { name: string; className: 
 }
 
 function CalendarDemo() {
-  const [date, setDate] = useState<Date | undefined>(new Date())
+  const [date, setDate] = useState<Date | undefined>(undefined)
+
+  // Format date consistently to avoid hydration mismatch
+  const formatDate = (d: Date) => {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  }
 
   return (
     <div className="space-y-4">
@@ -309,7 +314,7 @@ function CalendarDemo() {
       </div>
       {date && (
         <p className="text-body2 text-muted-foreground">
-          Selected: <span className="text-foreground font-medium">{date.toLocaleDateString()}</span>
+          Selected: <span className="text-foreground font-medium">{formatDate(date)}</span>
         </p>
       )}
     </div>
