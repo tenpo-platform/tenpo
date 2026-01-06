@@ -1,9 +1,0 @@
-/* Webfont: SeriouslyNostalgicItalic */@font-face {
-    font-family: 'SeriouslyNostalgicItalic';
-    src: url('Seriously Nostalgic Italic.woff2') format('woff2'), /* Modern Browsers */
-         url('Seriously Nostalgic Italic.otf') format('opentype'); /* Safari, Android, iOS */
-             font-style: normal;
-    font-weight: normal;
-    text-rendering: optimizeLegibility;
-}
-
