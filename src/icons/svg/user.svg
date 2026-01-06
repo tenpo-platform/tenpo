@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="-0.75 -0.75 24 24" id="User--Streamline-Platinum" height="24" width="24">
+  <desc>
+    User Streamline Icon: https://streamlinehq.com
+  </desc>
+  <g id="user">
+    <g id="Vector">
+      <path stroke="#000000" d="M15.9375 5.15625c0 2.8125 -1.875 4.6875 -4.6875 6.09375 -2.8125 -1.40625 -4.6875 -3.28125 -4.6875 -6.09375v-3.75s1.40625 -0.9375 4.6875 -0.9375 4.6875 0.9375 4.6875 0.9375v3.75Z" stroke-width="1.5"></path>
+      <path stroke="#000000" d="m19.21875 22.03125 2.625 -5.625s-3.5625 -2.8125 -10.59375 -2.8125c-7.03125 0 -10.59375 2.8125 -10.59375 2.8125l2.625 5.625h15.9375Z" stroke-width="1.5"></path>
+    </g>
+  </g>
+</svg>
