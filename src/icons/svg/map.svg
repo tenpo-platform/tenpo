@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="-0.75 -0.75 24 24" id="Map--Streamline-Platinum" height="24" width="24">
+  <desc>
+    Map Streamline Icon: https://streamlinehq.com
+  </desc>
+  <g id="map">
+    <path id="Vector" stroke="#000000" d="M7.5 1.875C6.2615625 1.875 2.8125 2.34375 0.46875 3.75v16.875C2.8125 19.21875 6.2615625 18.75 7.5 18.75M7.5 1.875l7.5 1.875M7.5 1.875v16.875m7.5 -15c1.2384374999999999 0 4.6875 -0.46875 7.03125 -1.875v16.875c-2.34375 1.40625 -5.7928125 1.875 -7.03125 1.875m0 -16.875v16.875m-7.5 -1.875 7.5 1.875" stroke-width="1.5"></path>
+  </g>
+</svg>

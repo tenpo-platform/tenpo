@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="-0.75 -0.75 24 24" id="Speakers--Streamline-Platinum" height="24" width="24">
+  <desc>
+    Speakers Streamline Icon: https://streamlinehq.com
+  </desc>
+  <g id="speakers">
+    <g id="Vector">
+      <path stroke="#000000" d="M1.875 2.8125S5.15625 0.46875 11.25 0.46875 20.625 2.8125 20.625 2.8125v19.21875l-9.375 0 -9.375 0L1.875 2.8125Z" stroke-width="1.5"></path>
+      <path stroke="#000000" d="M15.9375 14.53125a4.6875 4.6875 0 1 0 -9.375 0 4.6875 4.6875 0 0 0 9.375 0Z" stroke-width="1.5"></path>
+      <path stroke="#000000" d="M13.125 14.53125a1.875 1.875 0 1 0 -3.75 0 1.875 1.875 0 0 0 3.75 0Z" stroke-width="1.5"></path>
+      <path stroke="#000000" d="M13.125 5.15625a1.875 1.875 0 1 0 -3.75 0 1.875 1.875 0 0 0 3.75 0Z" stroke-width="1.5"></path>
+    </g>
+  </g>
+</svg>

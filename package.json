@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "icons:generate": "svgr src/icons/svg --out-dir src/icons/components --config-file svgr.config.js && node scripts/generate-icon-index.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -46,6 +47,7 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
+    "@svgr/cli": "^8.1.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
