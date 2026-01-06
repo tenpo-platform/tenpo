@@ -589,53 +589,55 @@ export default function PaletteOptionsDemo() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        {/* Hero Section */}
-        <section className="mb-6">
-          {/* Image Gallery */}
-          <div className="mb-4">
-            {/* Main Image */}
-            <div className="relative aspect-[3/1] bg-muted rounded-lg overflow-hidden mb-2">
-              <Image
-                src={campImages[selectedImage].src}
-                alt={campImages[selectedImage].alt}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 100vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+        {/* ==================== ASYMMETRIC HERO SECTION ==================== */}
+        <section className="mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Side - Image Gallery (2/3 width) */}
+            <div className="lg:col-span-2">
+              {/* Main Cinematic Image */}
+              <div className="relative aspect-[4/3] bg-muted rounded-xl overflow-hidden mb-3">
+                <Image
+                  src={campImages[selectedImage].src}
+                  alt={campImages[selectedImage].alt}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+              </div>
+              {/* Thumbnails - horizontal row */}
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {campImages.map((image, index) => (
+                  <button
+                    key={image.id}
+                    onClick={() => setSelectedImage(index)}
+                    className={cn(
+                      "shrink-0 w-20 h-14 md:w-24 md:h-16 rounded-lg overflow-hidden transition-all relative",
+                      selectedImage === index
+                        ? ""
+                        : "opacity-60 hover:opacity-100"
+                    )}
+                    style={{
+                      boxShadow: selectedImage === index ? `0 0 0 2px ${palette.primary}` : undefined,
+                    }}
+                  >
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      fill
+                      className="object-cover"
+                      sizes="96px"
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
-            {/* Thumbnails - horizontal row */}
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {campImages.map((image, index) => (
-                <button
-                  key={image.id}
-                  onClick={() => setSelectedImage(index)}
-                  className={cn(
-                    "shrink-0 w-16 h-12 md:w-20 md:h-14 rounded-md overflow-hidden transition-all relative",
-                    selectedImage === index
-                      ? ""
-                      : "opacity-60 hover:opacity-100"
-                  )}
-                  style={{
-                    boxShadow: selectedImage === index ? `0 0 0 2px ${palette.primary}` : undefined,
-                  }}
-                >
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    fill
-                    className="object-cover"
-                    sizes="80px"
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
 
-          {/* Title & Quick Info */}
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-            <div>
-              <div className="flex flex-wrap items-center gap-2 mb-2">
+            {/* Right Side - Info Sidebar (1/3 width) */}
+            <div className="lg:col-span-1 flex flex-col">
+              {/* Status Badges */}
+              <div className="flex flex-wrap items-center gap-2 mb-3">
                 <Badge style={{ backgroundColor: palette.primary, color: palette.primaryForeground }}>
                   Soccer
                 </Badge>
@@ -651,32 +653,109 @@ export default function PaletteOptionsDemo() {
                   Verified
                 </Badge>
               </div>
-              <h1 className="text-h4 md:text-h3 mb-2">Elite Soccer Skills Camp</h1>
-              <div className="flex items-center gap-4 text-body2 text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <MapPinIcon className="size-4" />
+
+              {/* Bold Title */}
+              <h1 className="text-h4 md:text-h3 font-semibold mb-3">Elite Soccer Skills Camp</h1>
+
+              {/* Location & Ratings */}
+              <div className="flex flex-wrap items-center gap-4 text-body2 text-muted-foreground mb-4">
+                <span className="flex items-center gap-1.5">
+                  <MapPinIcon className="size-4" style={{ color: palette.accent }} />
                   Palo Alto, CA
                 </span>
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1.5">
                   <StarIcon className="size-4 text-warning" filled />
                   4.9 (127 reviews)
                 </span>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsSaved(!isSaved)}
-                className={isSaved ? "text-error" : ""}
-              >
-                <HeartIcon className="size-5" filled={isSaved} />
-                {isSaved ? "Saved" : "Save"}
-              </Button>
-              <Button variant="ghost" size="sm">
-                <ShareIcon className="size-5" />
-                Share
-              </Button>
+
+              {/* Save/Share Actions */}
+              <div className="flex items-center gap-2 mb-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsSaved(!isSaved)}
+                  className={isSaved ? "text-error" : ""}
+                >
+                  <HeartIcon className="size-5" filled={isSaved} />
+                  {isSaved ? "Saved" : "Save"}
+                </Button>
+                <Button variant="ghost" size="sm">
+                  <ShareIcon className="size-5" />
+                  Share
+                </Button>
+              </div>
+
+              {/* Booking Card - Focal Point */}
+              <Card className="shadow-lg flex-1 gap-3">
+                <CardHeader className="pb-2">
+                  <div className="flex items-baseline justify-between">
+                    <div>
+                      <span className="text-h3 font-semibold" style={{ color: palette.primary }}>$349</span>
+                      <span className="text-body2 text-muted-foreground"> / camper</span>
+                    </div>
+                    <Badge variant="outline" className="text-success border-success">
+                      8 spots left
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-4">
+                  {/* Quick Stats */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3 text-body2">
+                      <CalendarIcon className="size-4 shrink-0" style={{ color: palette.primary }} />
+                      <span>Jul 15-19, 2025</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-body2">
+                      <ClockIcon className="size-4 shrink-0" style={{ color: palette.accent }} />
+                      <span>9:00 AM - 4:00 PM</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-body2">
+                      <UsersIcon className="size-4 shrink-0" style={{ color: palette.accent2 }} />
+                      <span>Ages 8-12 · Max 24 campers</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-body2">
+                      <MapPinIcon className="size-4 shrink-0" style={{ color: palette.primary }} />
+                      <span>Stanford Soccer Fields</span>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Price Breakdown */}
+                  <div className="bg-muted/50 rounded-lg p-3 text-caption">
+                    <div className="flex justify-between mb-1">
+                      <span>Base price</span>
+                      <span>$349</span>
+                    </div>
+                    <div className="flex justify-between mb-1">
+                      <span>Service fee</span>
+                      <span>$35</span>
+                    </div>
+                    <Separator className="my-2" />
+                    <div className="flex justify-between font-medium text-body2">
+                      <span>Total</span>
+                      <span>$384</span>
+                    </div>
+                  </div>
+
+                  {/* High-Contrast Register Button */}
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    style={{ backgroundColor: palette.primary, color: palette.primaryForeground }}
+                    onClick={handleOpenRegisterModal}
+                  >
+                    Register Now
+                  </Button>
+                  <Button variant="secondary" className="w-full">
+                    Ask a Question
+                  </Button>
+                  <p className="text-caption text-muted-foreground text-center">
+                    Free cancellation up to 14 days before
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </section>
@@ -685,30 +764,6 @@ export default function PaletteOptionsDemo() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-card rounded-lg p-4 border">
-                <CalendarIcon className="size-5 mb-2" style={{ color: palette.primary }} />
-                <p className="text-caption text-muted-foreground">Dates</p>
-                <p className="text-subtitle2 font-medium">Jul 15-19, 2025</p>
-              </div>
-              <div className="bg-card rounded-lg p-4 border">
-                <ClockIcon className="size-5 mb-2" style={{ color: palette.accent }} />
-                <p className="text-caption text-muted-foreground">Time</p>
-                <p className="text-subtitle2 font-medium">9am - 4pm</p>
-              </div>
-              <div className="bg-card rounded-lg p-4 border">
-                <UsersIcon className="size-5 mb-2" style={{ color: palette.accent2 }} />
-                <p className="text-caption text-muted-foreground">Spots Left</p>
-                <p className="text-subtitle2 font-medium">8 of 24</p>
-              </div>
-              <div className="bg-card rounded-lg p-4 border">
-                <MapPinIcon className="size-5 mb-2" style={{ color: palette.primary }} />
-                <p className="text-caption text-muted-foreground">Location</p>
-                <p className="text-subtitle2 font-medium">Stanford Fields</p>
-              </div>
-            </div>
-
             {/* Description */}
             <section>
               <h2 className="text-h5 mb-4" style={{ color: palette.primary }}>About This Camp</h2>
@@ -869,58 +924,12 @@ export default function PaletteOptionsDemo() {
           {/* Right Column - Sidebar (Sticky) */}
           <div className="lg:col-span-1">
             <div className="sticky top-[140px] space-y-6">
-              {/* Booking Card */}
-              <Card className="shadow-lg">
-                <CardHeader className="pb-4">
-                  <div className="flex items-baseline justify-between">
-                    <div>
-                      <span className="text-h4 font-medium" style={{ color: palette.primary }}>$349</span>
-                      <span className="text-body2 text-muted-foreground"> / camper</span>
-                    </div>
-                    <Badge variant="outline" className="text-success border-success">
-                      8 spots left
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="bg-muted/50 rounded-lg p-3 text-caption">
-                    <div className="flex justify-between mb-1">
-                      <span>Base price</span>
-                      <span>$349</span>
-                    </div>
-                    <div className="flex justify-between mb-1">
-                      <span>Service fee</span>
-                      <span>$35</span>
-                    </div>
-                    <Separator className="my-2" />
-                    <div className="flex justify-between font-medium">
-                      <span>Total</span>
-                      <span>$384</span>
-                    </div>
-                  </div>
-                  <Button
-                    className="w-full"
-                    size="lg"
-                    style={{ backgroundColor: palette.primary, color: palette.primaryForeground }}
-                    onClick={handleOpenRegisterModal}
-                  >
-                    Register Now
-                  </Button>
-                  <Button variant="secondary" className="w-full">
-                    Ask a Question
-                  </Button>
-                  <p className="text-caption text-muted-foreground text-center">
-                    Free cancellation up to 14 days before
-                  </p>
-                </CardContent>
-              </Card>
-
               {/* Academy Info */}
-              <Card>
-                <CardHeader className="pb-2">
+              <Card className="gap-2">
+                <CardHeader className="pb-0">
                   <CardTitle className="text-subtitle1">Hosted by</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="pt-0 space-y-4">
                   <div className="flex items-center gap-3">
                     <div
                       className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-medium"
@@ -951,11 +960,11 @@ export default function PaletteOptionsDemo() {
               </Card>
 
               {/* Coaches */}
-              <Card>
-                <CardHeader className="pb-2">
+              <Card className="gap-2">
+                <CardHeader className="pb-0">
                   <CardTitle className="text-subtitle1">Meet the Coaches</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="pt-0 space-y-4">
                   {coaches.map((coach, index) => (
                     <div key={index} className="flex items-start gap-3">
                       <Avatar className="size-10">
@@ -978,11 +987,11 @@ export default function PaletteOptionsDemo() {
               </Card>
 
               {/* Safety Requirements */}
-              <Card>
-                <CardHeader className="pb-2">
+              <Card className="gap-2">
+                <CardHeader className="pb-0">
                   <CardTitle className="text-subtitle1">Safety & Requirements</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-0">
                   <ul className="space-y-2 text-caption text-muted-foreground">
                     <li className="flex items-start gap-2">
                       <CheckIcon className="size-4 shrink-0 mt-0.5" style={{ color: palette.accent }} />
