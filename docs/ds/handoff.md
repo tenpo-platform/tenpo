@@ -591,12 +591,20 @@ npx shadcn@latest add dropdown-menu avatar toast separator
 ## Success Criteria
 
 - [x] All design tokens extracted from Figma (colors, spacing, radius, typography)
-- [ ] Tailwind config has all tokens
-- [ ] shadcn/ui installed and configured
-- [ ] Host Grotesk font loads correctly
-- [ ] Button, Input, Card, Badge use your brand colors
-- [ ] DataGrid wrapper created and styled to match theme
-- [ ] Public pages load < 50kb JS
+- [x] Tailwind config has all tokens — *Via `@theme inline` in globals.css (Tailwind CSS 4)*
+- [x] shadcn/ui installed and configured — *30 components*
+- [x] Host Grotesk font loads correctly — *Variable font with display: swap*
+- [x] Button, Input, Card, Badge use your brand colors — *All themed*
+- [ ] DataGrid wrapper created and styled to match theme — *Deferred until admin routes*
+- [ ] Public pages load < 50kb JS — *Not yet verified*
+
+### Bonus Completed
+- [x] Seriously Nostalgic accent font configured
+- [x] Icon system with SVGR pipeline (100+ Streamline icons)
+- [x] Design system demo page at `/ds`
+- [x] Form validation (React Hook Form + Zod)
+- [x] Calendar, Slider, Command palette components
+- [x] Toast notifications (Sonner)
 
 ---
 

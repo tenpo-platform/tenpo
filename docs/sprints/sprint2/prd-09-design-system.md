@@ -126,3 +126,24 @@ Parents and camp organizers should feel like they're using a modern, premium pro
 |------|--------|----------------|
 | Decision maker | You | Approves all DS changes |
 | Maintainers | You + dev team | Updates tokens and components |
+
+---
+
+## Completion Status (Sprint 2)
+
+### In Scope Items
+
+| Item | Status | Notes |
+|------|--------|-------|
+| **Tailwind Config:** All tokens from Figma | ✅ Done | Colors, spacing, radius, typography in `globals.css` |
+| **shadcn/ui Setup:** Initialize and customize | ✅ Done | 30 components installed and themed |
+| **Fonts:** Host Grotesk + Seriously Nostalgic | ✅ Done | Local fonts in `src/fonts/`, configured in `layout.tsx` |
+| **Base Components:** Button, Input, Card, etc. | ✅ Done | All requested components plus extras |
+| **MUI DataGrid Wrapper:** Styled wrapper | ⏳ Deferred | Will implement when admin routes are built |
+| **Icon Workflow:** Streamline → SVG → codebase | ✅ Done | SVGR pipeline with 100+ icons |
+
+### Bonus Deliverables
+- ✅ Design system demo page at `/ds` with all components
+- ✅ Form validation integration (React Hook Form + Zod)
+- ✅ Calendar component with DS styling
+- ✅ Toast/Sonner notifications configured
