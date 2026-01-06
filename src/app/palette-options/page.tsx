@@ -328,6 +328,7 @@ const similarCamps = [
 export default function PaletteOptionsDemo() {
   const [paletteMode, setPaletteMode] = useState<PaletteMode>("pitch-green")
   const [selectedImage, setSelectedImage] = useState(0)
+  const [previewImage, setPreviewImage] = useState<number | null>(null)
   const [isSaved, setIsSaved] = useState(false)
   const [helpfulCounts, setHelpfulCounts] = useState<Record<number, number>>({
     1: 12,
@@ -597,40 +598,46 @@ export default function PaletteOptionsDemo() {
               {/* Main Cinematic Image */}
               <div className="relative aspect-[4/3] bg-muted rounded-xl overflow-hidden mb-3">
                 <Image
-                  src={campImages[selectedImage].src}
-                  alt={campImages[selectedImage].alt}
+                  src={campImages[previewImage ?? selectedImage].src}
+                  alt={campImages[previewImage ?? selectedImage].alt}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-opacity duration-200"
                   sizes="(max-width: 1024px) 100vw, 60vw"
                   priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
               </div>
               {/* Thumbnails - horizontal row */}
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                {campImages.map((image, index) => (
-                  <button
-                    key={image.id}
-                    onClick={() => setSelectedImage(index)}
-                    className={cn(
-                      "shrink-0 w-20 h-14 md:w-24 md:h-16 rounded-lg overflow-hidden transition-all relative",
-                      selectedImage === index
-                        ? ""
-                        : "opacity-60 hover:opacity-100"
-                    )}
-                    style={{
-                      boxShadow: selectedImage === index ? `0 0 0 2px ${palette.primary}` : undefined,
-                    }}
-                  >
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      className="object-cover"
-                      sizes="96px"
-                    />
-                  </button>
-                ))}
+              <div
+                className="flex gap-2 overflow-x-auto pb-1"
+                onMouseLeave={() => setPreviewImage(null)}
+              >
+                {campImages.map((image, index) => {
+                  const isSelected = selectedImage === index
+                  const isPreviewing = previewImage === index
+                  return (
+                    <button
+                      key={image.id}
+                      onClick={() => setSelectedImage(index)}
+                      onMouseEnter={() => setPreviewImage(index)}
+                      className={cn(
+                        "shrink-0 w-20 h-14 md:w-24 md:h-16 rounded-lg overflow-hidden transition-all relative",
+                        isSelected || isPreviewing ? "" : "opacity-60 hover:opacity-100"
+                      )}
+                      style={{
+                        boxShadow: isSelected ? `0 0 0 2px ${palette.primary}` : undefined,
+                      }}
+                    >
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        fill
+                        className="object-cover"
+                        sizes="96px"
+                      />
+                    </button>
+                  )
+                })}
               </div>
             </div>
 
