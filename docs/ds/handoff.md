@@ -103,49 +103,133 @@ Use Figma MCP with `fileKey: EC9yypYtK3uUucw7gT9hY9`
 | Typography (Host Grotesk) | `105:1536` | `?node-id=105-1536` |
 | Typography (Seriously Nostalgic) | `105:1614` | `?node-id=105-1614` |
 
-**Note:** Colors have been extracted (see below). Spacing, corner radius, and typography values still need extraction from the frames above.
+**Status:** All tokens extracted (colors, spacing, corner radius, typography).
 
 ---
 
-## Extracted Color Tokens
+## Color Tokens
 
-These were extracted from Figma. Use these values in `tailwind.config.ts`.
+Uses **functional names** (shadcn convention) for AI/dev familiarity, with brand aliases for Figma reference.
 
-### Core Palette
+### Functional Colors (Use These)
 
-| Name | Hex | Tailwind Key | Usage |
-|------|-----|--------------|-------|
-| Pitch Green | `#043625` | `primary` | **Primary brand color** |
-| Midnight | `#0B1E3C` | `midnight` | Dark backgrounds, secondary |
-| Obsidian | `#1F1F1F` | `obsidian` | Darkest neutral, text |
-| Carbon | `#392F36` | `carbon` | Dark text alternative |
-| Sand | `#B1AB9B` | `sand` | Muted accent |
-| Steel | `#C0C9D6` | `steel` | Borders, dividers |
-| Mist | `#E1DADA` | `mist` | Light backgrounds |
-| Vapor | `#D9DDE0` | `vapor` | Light gray |
-| Cloud Blue | `#DEEBFF` | `cloud` | Info background |
-| Day | `#EBE3C6` | `day` | Warm light accent |
-| Chalk | `#EFEEEA` | `chalk` | Off-white |
-| Optic White | `#FFFFFF` | `white` | Pure white |
-| Page Background | `#F9F7F2` | `background` | Default page bg |
+| Functional | Hex | Usage |
+|------------|-----|-------|
+| `background` | #F9F7F2 | Page backgrounds |
+| `foreground` | #1F1F1F | Primary text |
+| `primary` | #043625 | Buttons, links, brand accents |
+| `primary-foreground` | #FFFFFF | Text on primary |
+| `secondary` | #EFEEEA | Secondary buttons |
+| `secondary-foreground` | #1F1F1F | Text on secondary |
+| `muted` | #EFEEEA | Subtle backgrounds |
+| `muted-foreground` | #B1AB9B | Subtle text, placeholders |
+| `accent` | #EBE3C6 | Highlights, hover states |
+| `accent-foreground` | #1F1F1F | Text on accent |
+| `destructive` | #F000A7 | Delete, errors (magenta) |
+| `destructive-foreground` | #FFFFFF | Text on destructive |
+| `border` | #C0C9D6 | Borders, dividers |
+| `input` | #C0C9D6 | Input borders |
+| `ring` | #043625 | Focus rings |
+| `card` | #FFFFFF | Card backgrounds |
+| `card-foreground` | #1F1F1F | Text on cards |
 
-### Status Colors (Light Mode)
+### Brand Aliases (For Figma Reference)
 
-| Status | Icon | Text | Background |
-|--------|------|------|------------|
-| Warning | `#EF6C00` | `#984500` | `#F0ECDD` |
-| Success | `#0A7F10` | `#006D06` | `#E6EB8A` |
-| Error | `#F000A7` | `#AE0079` | `#F7E2F0` |
-| Info | `#0014AE` | `#002C9A` | `#DEEBFF` |
+| Brand Name | Hex | Maps To |
+|------------|-----|---------|
+| Pitch Green | #043625 | `primary` |
+| Obsidian | #1F1F1F | `foreground` |
+| Chalk | #EFEEEA | `muted` |
+| Sand | #B1AB9B | `muted-foreground` |
+| Steel | #C0C9D6 | `border` |
+| Mist | #E1DADA | — |
+| Vapor | #D9DDE0 | — |
+| Cloud Blue | #DEEBFF | `info-muted` |
+| Day | #EBE3C6 | `accent` |
+| Midnight | #0B1E3C | (dark mode) |
+| Carbon | #392F36 | — |
+| Bleached Sand | #F9F7F2 | `background` |
 
-### Status Colors (Dark Mode)
+### Status Colors
 
-| Status | Icon | Text | Background |
-|--------|------|------|------------|
-| Warning | `#EF6C00` | `#FF9A47` | `#321B00` |
-| Success | `#86EB12` | `#A9FF47` | `#2D3000` |
-| Error | `#FF42C5` | `#FF65D1` | `#3B0029` |
-| Info | `#15ADFF` | `#65C9FF` | `#001638` |
+| Status | Default | Foreground | Muted |
+|--------|---------|------------|-------|
+| `warning` | #EF6C00 | #984500 | #F0ECDD |
+| `success` | #0A7F10 | #006D06 | #E6EB8A |
+| `error` | #F000A7 | #AE0079 | #F7E2F0 |
+| `info` | #0014AE | #002C9A | #DEEBFF |
+
+### Dark Mode Status (Future)
+
+| Status | Default | Foreground | Muted |
+|--------|---------|------------|-------|
+| `warning` | #EF6C00 | #FF9A47 | #321B00 |
+| `success` | #86EB12 | #A9FF47 | #2D3000 |
+| `error` | #FF42C5 | #FF65D1 | #3B0029 |
+| `info` | #15ADFF | #65C9FF | #001638 |
+
+---
+
+## Spacing Scale
+
+Mapped to Tailwind conventions so `p-4` = 16px as expected.
+
+| Figma Token | Tailwind Key | Value | Usage |
+|-------------|--------------|-------|-------|
+| — | `0` | 0px | None |
+| — | `1` | 4px | Tiny gaps |
+| Spacing 1 | `2` | 8px | `p-2`, `gap-2` |
+| — | `3` | 12px | — |
+| Spacing 2 | `4` | 16px | `p-4`, `gap-4` |
+| — | `5` | 20px | — |
+| Spacing 3 | `6` | 24px | `p-6`, `gap-6` |
+| Spacing 4 | `8` | 32px | `p-8`, `gap-8` |
+| Spacing 5 | `10` | 40px | `p-10`, `gap-10` |
+| Spacing 6 | `12` | 48px | `p-12`, `gap-12` |
+| Spacing 7 | `14` | 56px | `p-14`, `gap-14` |
+| Spacing 8 | `16` | 64px | `p-16`, `gap-16` |
+
+---
+
+## Corner Radius
+
+| Name | Tailwind Key | Value |
+|------|--------------|-------|
+| None | `none` | 0px |
+| Small | `sm` | 12px |
+| Medium | `md` | 24px |
+| Large | `lg` | 32px |
+| Full | `full` | 9999px |
+
+Note: Larger than typical — intentional brand choice for rounded, soft aesthetic.
+
+---
+
+## Typography Scale (Host Grotesk)
+
+| Style | Size | Line Height | Letter Spacing | Weight |
+|-------|------|-------------|----------------|--------|
+| h1 | 96px | — | — | 400 |
+| h2 | 60px | — | — | 400 |
+| h3 | 48px | — | — | 400 |
+| h4 | 34px | — | — | 400 |
+| h5 | 24px | — | — | 400 |
+| h6 | 20px | 160% | 0.15px | 500 |
+| subtitle1 | 16px | — | — | 400 |
+| subtitle2 | 14px | — | — | 400 |
+| body1 | 16px | — | — | 400 |
+| body2 | 14px | 143% | 0.17px | 400 |
+| caption | 12px | 166% | 0.4px | 400 |
+| overline | 12px | — | — | 400 |
+
+## Typography Scale (Seriously Nostalgic)
+
+| Style | Size | Usage |
+|-------|------|-------|
+| h1 | 96px | Hero headlines |
+| h2 | 60px | Section headlines |
+
+*Used sparingly for brand moments and display text.*
 
 ---
 
@@ -154,7 +238,7 @@ These were extracted from Figma. Use these values in `tailwind.config.ts`.
 | Font | Role | Weights |
 |------|------|---------|
 | Host Grotesk | Primary (body, UI, buttons) | 400, 500, 700 |
-| Seriously Nostalgic | Accent (headlines, hero text) | TBD — check files |
+| Seriously Nostalgic | Accent (headlines, hero text) | 400 |
 
 **Files:** OTF files are in `docs/ds/fonts/`. Copy to `src/fonts/` during setup.
 
@@ -166,7 +250,7 @@ These were extracted from Figma. Use these values in `tailwind.config.ts`.
 
 ### Phase 1: Tailwind Config with Tokens
 
-Create/update `tailwind.config.ts` with your Figma tokens:
+Create/update `tailwind.config.ts` with functional color names:
 
 ```typescript
 // tailwind.config.ts
@@ -177,47 +261,118 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Core palette
-        primary: '#043625',      // Pitch Green
-        midnight: '#0B1E3C',
-        obsidian: '#1F1F1F',
-        carbon: '#392F36',
-        sand: '#B1AB9B',
-        steel: '#C0C9D6',
-        mist: '#E1DADA',
-        vapor: '#D9DDE0',
-        cloud: '#DEEBFF',
-        day: '#EBE3C6',
-        chalk: '#EFEEEA',
+        // === FUNCTIONAL (use these) ===
         background: '#F9F7F2',
+        foreground: '#1F1F1F',
 
-        // Status colors
+        primary: {
+          DEFAULT: '#043625',
+          foreground: '#FFFFFF',
+        },
+        secondary: {
+          DEFAULT: '#EFEEEA',
+          foreground: '#1F1F1F',
+        },
+        muted: {
+          DEFAULT: '#EFEEEA',
+          foreground: '#B1AB9B',
+        },
+        accent: {
+          DEFAULT: '#EBE3C6',
+          foreground: '#1F1F1F',
+        },
+        destructive: {
+          DEFAULT: '#F000A7',
+          foreground: '#FFFFFF',
+        },
+
+        border: '#C0C9D6',
+        input: '#C0C9D6',
+        ring: '#043625',
+
+        card: {
+          DEFAULT: '#FFFFFF',
+          foreground: '#1F1F1F',
+        },
+        popover: {
+          DEFAULT: '#FFFFFF',
+          foreground: '#1F1F1F',
+        },
+
+        // === STATUS ===
         warning: {
           DEFAULT: '#EF6C00',
-          text: '#984500',
-          bg: '#F0ECDD',
+          foreground: '#984500',
+          muted: '#F0ECDD',
         },
         success: {
           DEFAULT: '#0A7F10',
-          text: '#006D06',
-          bg: '#E6EB8A',
+          foreground: '#006D06',
+          muted: '#E6EB8A',
         },
         error: {
           DEFAULT: '#F000A7',
-          text: '#AE0079',
-          bg: '#F7E2F0',
+          foreground: '#AE0079',
+          muted: '#F7E2F0',
         },
         info: {
           DEFAULT: '#0014AE',
-          text: '#002C9A',
-          bg: '#DEEBFF',
+          foreground: '#002C9A',
+          muted: '#DEEBFF',
         },
+
+        // === BRAND ALIASES (for Figma reference) ===
+        'pitch-green': '#043625',
+        'obsidian': '#1F1F1F',
+        'chalk': '#EFEEEA',
+        'sand': '#B1AB9B',
+        'steel': '#C0C9D6',
+        'mist': '#E1DADA',
+        'vapor': '#D9DDE0',
+        'cloud': '#DEEBFF',
+        'day': '#EBE3C6',
+        'midnight': '#0B1E3C',
+        'carbon': '#392F36',
       },
       fontFamily: {
         sans: ['Host Grotesk', 'sans-serif'],
         display: ['Seriously Nostalgic', 'serif'],
       },
-      // Add spacing and borderRadius from Figma frames
+      spacing: {
+        '0': '0px',
+        '1': '4px',
+        '2': '8px',    // Figma Spacing 1
+        '3': '12px',
+        '4': '16px',   // Figma Spacing 2
+        '5': '20px',
+        '6': '24px',   // Figma Spacing 3
+        '8': '32px',   // Figma Spacing 4
+        '10': '40px',  // Figma Spacing 5
+        '12': '48px',  // Figma Spacing 6
+        '14': '56px',  // Figma Spacing 7
+        '16': '64px',  // Figma Spacing 8
+      },
+      borderRadius: {
+        'none': '0px',
+        'sm': '12px',
+        'md': '24px',
+        'lg': '32px',
+        'full': '9999px',
+      },
+      fontSize: {
+        'h1': ['96px', { lineHeight: '1' }],
+        'h2': ['60px', { lineHeight: '1' }],
+        'h3': ['48px', { lineHeight: '1' }],
+        'h4': ['34px', { lineHeight: '1' }],
+        'h5': ['24px', { lineHeight: '1' }],
+        'h6': ['20px', { lineHeight: '1.6', letterSpacing: '0.15px' }],
+        'subtitle1': ['16px', { lineHeight: '1.5' }],
+        'subtitle2': ['14px', { lineHeight: '1.5' }],
+        'body1': ['16px', { lineHeight: '1.5' }],
+        'body2': ['14px', { lineHeight: '1.43', letterSpacing: '0.17px' }],
+        'caption': ['12px', { lineHeight: '1.66', letterSpacing: '0.4px' }],
+        'overline': ['12px', { lineHeight: '1.5' }],
+      },
     },
   },
   plugins: [],
@@ -435,13 +590,13 @@ npx shadcn@latest add dropdown-menu avatar toast separator
 
 ## Success Criteria
 
-- [ ] Tailwind config has all color tokens from Figma
+- [x] All design tokens extracted from Figma (colors, spacing, radius, typography)
+- [ ] Tailwind config has all tokens
 - [ ] shadcn/ui installed and configured
 - [ ] Host Grotesk font loads correctly
 - [ ] Button, Input, Card, Badge use your brand colors
 - [ ] DataGrid wrapper created and styled to match theme
 - [ ] Public pages load < 50kb JS
-- [ ] Typography and spacing values extracted from Figma
 
 ---
 
