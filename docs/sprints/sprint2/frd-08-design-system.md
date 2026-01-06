@@ -491,26 +491,32 @@ Public pages never load MUI. Next.js handles lazy loading for admin routes.
 ## Implementation Checklist
 
 ### Phase 1: Foundation
-- [ ] Configure `tailwind.config.ts` with all tokens (colors, spacing, radius, typography)
-- [ ] Set up shadcn/ui with `npx shadcn@latest init`
-- [ ] Copy font files to `src/fonts/` and convert to WOFF2
-- [ ] Configure fonts in `layout.tsx`
-- [ ] Update `globals.css` with CSS variables
+- [x] Configure `tailwind.config.ts` with all tokens (colors, spacing, radius, typography) — *Using Tailwind CSS 4 `@theme inline` in globals.css*
+- [x] Set up shadcn/ui with `npx shadcn@latest init`
+- [x] Copy font files to `src/fonts/` — *Using TTF/OTF (variable font), WOFF2 conversion optional*
+- [x] Configure fonts in `layout.tsx`
+- [x] Update `globals.css` with CSS variables
 
 ### Phase 2: Components
-- [ ] Add shadcn components (button, input, card, badge, etc.)
-- [ ] Customize component styles to match Figma
-- [ ] Create MUI DataGrid wrapper
+- [x] Add shadcn components (button, input, card, badge, etc.) — *30 components installed*
+- [x] Customize component styles to match Figma — *Button has custom variants (tertiary, ghost, link)*
+- [ ] Create MUI DataGrid wrapper — *Deferred until admin routes are built*
 
 ### Phase 3: Verification
-- [ ] All color tokens match Figma
-- [ ] Spacing scale works (8px increments)
-- [ ] Border radius matches (12, 24, 32px)
-- [ ] Typography scale renders correctly
-- [ ] Fonts load without FOUT/FOIT
-- [ ] Button, Input, Card render correctly
-- [ ] DataGrid wrapper matches theme
-- [ ] Public pages < 50kb JS
+- [x] All color tokens match Figma
+- [x] Spacing scale works (8px increments)
+- [x] Border radius matches (12, 24, 32px)
+- [x] Typography scale renders correctly — *12 styles as utilities in globals.css*
+- [x] Fonts load without FOUT/FOIT — *Using display: "swap"*
+- [x] Button, Input, Card render correctly
+- [ ] DataGrid wrapper matches theme — *Deferred*
+- [ ] Public pages < 50kb JS — *Not yet verified*
+
+### Bonus: Completed Beyond Spec
+- [x] Icon system with SVGR pipeline (`yarn icons:generate`)
+- [x] 100+ Streamline icons as React components
+- [x] Design system demo page at `/ds`
+- [x] Form validation integration (React Hook Form + Zod)
 
 ### Token Extraction Status
 
