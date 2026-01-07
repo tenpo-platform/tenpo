@@ -13,6 +13,7 @@ Feature flags allow you to toggle functionality on/off via environment variables
 |----------|---------|-------------|
 | `NEXT_PUBLIC_ENABLE_CAPTCHA` | `true` | Enable Turnstile CAPTCHA on auth forms |
 | `NEXT_PUBLIC_ENABLE_ANALYTICS` | `true` | Enable Sentry error tracking |
+| `NEXT_PUBLIC_SHOWCASE_MODE` | `false` | Enable showcase routes (`/sample-landing`, `/palette-options`, `/ds`) |
 
 ---
 
@@ -26,18 +27,21 @@ Set these in **Vercel Dashboard → Project → Settings → Environment Variabl
 ```
 NEXT_PUBLIC_ENABLE_CAPTCHA=true
 NEXT_PUBLIC_ENABLE_ANALYTICS=true
+NEXT_PUBLIC_SHOWCASE_MODE=false
 ```
 
-**Preview (optional - disable if not configured):**
+**Preview/Staging:**
 ```
 NEXT_PUBLIC_ENABLE_CAPTCHA=false
 NEXT_PUBLIC_ENABLE_ANALYTICS=false
+NEXT_PUBLIC_SHOWCASE_MODE=true
 ```
 
 **Development (local `.env.local`):**
 ```
 NEXT_PUBLIC_ENABLE_CAPTCHA=false
 NEXT_PUBLIC_ENABLE_ANALYTICS=false
+NEXT_PUBLIC_SHOWCASE_MODE=true
 ```
 
 ---
