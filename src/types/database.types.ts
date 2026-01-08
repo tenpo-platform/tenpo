@@ -1,5 +1,3 @@
-WARN: environment variable is unset: TURNSTILE_SECRET_KEY
-Connecting to db 5432
 export type Json =
   | string
   | number
