@@ -94,6 +94,14 @@ This document describes the environment setup for Tenpo across Vercel, Supabase,
 
 Local development uses Docker via Supabase CLI for complete isolation.
 
+### Supabase CLI Linking (Safety)
+
+Local work should never be linked to staging or production by default. Linking controls where `supabase db push` and similar commands apply.
+
+- **Local default:** run against local Docker only (no remote link).
+- **Staging/Prod:** link only when you intentionally plan to push or inspect a remote project, then unlink afterward.
+- **Safety check:** if `supabase/.temp/project-ref` exists, you are currently linked to a remote project.
+
 ### Setup
 
 ```bash
