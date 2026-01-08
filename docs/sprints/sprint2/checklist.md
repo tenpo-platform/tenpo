@@ -12,20 +12,24 @@
 - [x] Setup layout components
 - [x] Create DS agent prompts
 
-## Database Schema (0/4)
+## Database Schema (4/4) ✓
 
-- [ ] Create core schema migration
-- [ ] Implement RLS policies
-- [ ] Generate TypeScript types from schema
-- [ ] Seed DivineTime org + Luca admin
+- [x] Create core schema migration
+- [x] Implement RLS policies
+- [x] Generate TypeScript types from schema
+- [x] Seed DivineTime org + Luca admin
 
-## Auth (0/5)
+## Auth (0/9)
 
+- [ ] Create auth database migration (invites table, trigger updates)
 - [ ] Build login page
-- [ ] Build signup flow (role split)
+- [ ] Build signup page (parent flow)
 - [ ] Build password reset flow
-- [ ] Implement auth middleware + protected routes
 - [ ] Build auth callback handler
+- [ ] Implement auth middleware + protected routes
+- [ ] Build invite acceptance + academy onboarding flow
+- [ ] Setup Google OAuth
+- [ ] Create branded email template
 
 ## Domain & Infrastructure (0/2)
 
