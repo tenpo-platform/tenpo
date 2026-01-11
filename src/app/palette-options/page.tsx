@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -361,11 +361,13 @@ export default function PaletteOptionsDemo() {
   const palette = palettes[paletteMode]
 
   // Handle scroll for back-to-top button
-  if (typeof window !== "undefined") {
-    window.onscroll = () => {
+  useEffect(() => {
+    const handleScroll = () => {
       setShowBackToTop(window.scrollY > 500)
     }
-  }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" })
