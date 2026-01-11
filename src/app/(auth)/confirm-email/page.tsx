@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { AuthWidget } from "@/components/auth/auth-widget";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -15,11 +16,13 @@ export default async function ConfirmEmailPage({
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardContent>
-          <AuthWidget
-            initialMode="verify-otp"
-            context="static"
-            prefillEmail={email}
-          />
+          <Suspense fallback={<div>Loading...</div>}>
+            <AuthWidget
+              initialMode="verify-otp"
+              context="static"
+              prefillEmail={email}
+            />
+          </Suspense>
         </CardContent>
       </Card>
     </div>

@@ -1,47 +1,25 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
-
-// Routes only available when NEXT_PUBLIC_SHOWCASE_MODE=true (staging)
-const SHOWCASE_ROUTES = ["/palette-options", "/sample-landing", "/ds"];
-
-// Public routes - no auth required
-const PUBLIC_ROUTES = [
-  "/",
-  "/camps",
-  "/checkout",
-  "/login",
-  "/signup",
-  "/forgot-password",
-  "/reset-password",
-  "/confirm-email",
-  "/auth",
-  "/invite",
-];
-
-// Routes that require email confirmation
-const CONFIRMATION_REQUIRED_ROUTES = ["/dashboard", "/organizer", "/admin"];
-
-// Admin-only routes (requires ACADEMY_ADMIN or SUPER_ADMIN)
-const ADMIN_ROUTES = ["/organizer"];
-
-// Super admin-only routes (requires SUPER_ADMIN)
-const SUPER_ADMIN_ROUTES = ["/admin"];
-
-// Parent-only routes (requires PARENT role)
-const PARENT_ROUTES = ["/dashboard"];
-
-// Auth routes that should redirect if already logged in
-const AUTH_ROUTES = ["/login", "/signup"];
-
-function matchesRoute(pathname: string, routes: string[]): boolean {
-  return routes.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`)
-  );
-}
+import {
+  ADMIN_ROUTES,
+  AUTH_ROUTES,
+  CONFIRMATION_REQUIRED_ROUTES,
+  PARENT_ROUTES,
+  PUBLIC_ROUTES,
+  SHOWCASE_ROUTES,
+  SUPER_ADMIN_ROUTES,
+  matchesRoute,
+} from "@/lib/middleware/routes";
+import {
+  getDefaultRedirectForRoles,
+  getRoleFlags,
+  getUnauthorizedRedirect,
+} from "@/lib/middleware/roles";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Skip API routes
   if (pathname.startsWith("/api")) {
     return NextResponse.next();
   }
@@ -64,31 +42,25 @@ export async function middleware(request: NextRequest) {
       const {
         data: { user },
       } = await supabase.auth.getUser();
+
       if (user) {
-        // Check role to determine redirect destination
         const { data: userRoles } = await supabase
           .from("user_roles")
           .select("role")
           .eq("user_id", user.id);
 
         const roles = userRoles?.map((r) => r.role) ?? [];
+        const roleFlags = getRoleFlags(roles);
 
         // If user has no roles, let them stay on login page (don't redirect)
         // This prevents redirect loops for users with incomplete account setup
-        if (roles.length === 0) {
+        if (!roleFlags.hasRoles) {
           return response;
         }
 
-        const isSuperAdmin = roles.includes("SUPER_ADMIN");
-        const isAcademyAdmin = roles.includes("ACADEMY_ADMIN");
-
-        if (isSuperAdmin) {
-          return NextResponse.redirect(new URL("/admin", request.url));
-        }
-        if (isAcademyAdmin) {
-          return NextResponse.redirect(new URL("/organizer", request.url));
-        }
-        return NextResponse.redirect(new URL("/dashboard", request.url));
+        return NextResponse.redirect(
+          new URL(getDefaultRedirectForRoles(roleFlags), request.url)
+        );
       }
     }
     return response;
@@ -120,13 +92,11 @@ export async function middleware(request: NextRequest) {
     .eq("user_id", user.id);
 
   const roles = userRoles?.map((r) => r.role) ?? [];
-  const isSuperAdmin = roles.includes("SUPER_ADMIN");
-  const isAcademyAdmin = roles.includes("ACADEMY_ADMIN");
-  const isParent = roles.includes("PARENT");
+  const roleFlags = getRoleFlags(roles);
 
   // Users with no roles (e.g., pending invite) - redirect to login
   // This prevents redirect loops between /dashboard and /organizer
-  if (roles.length === 0) {
+  if (!roleFlags.hasRoles) {
     return NextResponse.redirect(
       new URL("/login?error=no_role", request.url)
     );
@@ -134,25 +104,23 @@ export async function middleware(request: NextRequest) {
 
   // Super admin routes - require SUPER_ADMIN role
   if (matchesRoute(pathname, SUPER_ADMIN_ROUTES)) {
-    if (!isSuperAdmin) {
-      // Redirect based on role
-      if (isAcademyAdmin) {
-        return NextResponse.redirect(new URL("/organizer", request.url));
-      }
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+    if (!roleFlags.isSuperAdmin) {
+      return NextResponse.redirect(
+        new URL(getUnauthorizedRedirect(roleFlags), request.url)
+      );
     }
   }
 
   // Admin routes - require ACADEMY_ADMIN or SUPER_ADMIN role
   if (matchesRoute(pathname, ADMIN_ROUTES)) {
-    if (!isAcademyAdmin && !isSuperAdmin) {
+    if (!roleFlags.isAcademyAdmin && !roleFlags.isSuperAdmin) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }
 
   // Parent routes - require PARENT role (SUPER_ADMIN can access all)
   if (matchesRoute(pathname, PARENT_ROUTES)) {
-    if (!isParent && !isSuperAdmin) {
+    if (!roleFlags.isParent && !roleFlags.isSuperAdmin) {
       return NextResponse.redirect(new URL("/organizer", request.url));
     }
   }
