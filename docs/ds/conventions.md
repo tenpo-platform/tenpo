@@ -66,6 +66,8 @@ This document defines the design conventions extracted from Figma. All implement
 | **Small** | 12px | `rounded-sm` |
 | **Medium** | 24px | `rounded-md` |
 | **Large** | 32px | `rounded-lg` |
+| **Extra Large** | 36px | `rounded-xl` |
+| **2X Large** | 40px | `rounded-2xl` |
 | **Full** | 9999px | `rounded-full` |
 
 Note: These are intentionally larger than typical designs for a soft, rounded aesthetic.

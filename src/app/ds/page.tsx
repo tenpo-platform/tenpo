@@ -23,7 +23,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Skeleton } from "@/components/ui/skeleton"
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Calendar } from "@/components/ui/calendar"
@@ -31,6 +31,8 @@ import { Progress } from "@/components/ui/progress"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Slider } from "@/components/ui/slider"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut } from "@/components/ui/command"
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { ChevronLeft, ChevronRight, Menu, ChevronDown, MoreHorizontal, Info } from "lucide-react"
 import { toast } from "sonner"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -122,84 +124,6 @@ const allSectionIds = navigation.flatMap(section => [
   section.id,
   ...section.items.map(item => item.id),
 ])
-
-// Icons
-function ArrowLeft({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  )
-}
-
-function ArrowRight({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  )
-}
-
-function MenuIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M3 5H17M3 10H17M3 15H17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    </svg>
-  )
-}
-
-function WarningIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 7V10.5M10 13.5V13M8.66 3.5L2.1 15A1.5 1.5 0 003.44 17.25H16.56A1.5 1.5 0 0017.9 15L11.34 3.5A1.5 1.5 0 008.66 3.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  )
-}
-
-function SuccessIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="1.5"/>
-      <path d="M6.5 10L9 12.5L13.5 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  )
-}
-
-function ErrorIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="1.5"/>
-      <path d="M10 6.5V10.5M10 13.5V13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    </svg>
-  )
-}
-
-function InfoIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="1.5"/>
-      <path d="M10 9V14M10 6.5V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    </svg>
-  )
-}
-
-function ChevronDown({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  )
-}
-
-function MoreHorizontal({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="8" cy="8" r="1" fill="currentColor"/>
-      <circle cx="12" cy="8" r="1" fill="currentColor"/>
-      <circle cx="4" cy="8" r="1" fill="currentColor"/>
-    </svg>
-  )
-}
 
 // Form schema
 const formSchema = z.object({
@@ -613,16 +537,16 @@ export default function DesignSystemDemo() {
                 <p className="text-caption text-muted-foreground mb-4">Default size with icons</p>
                 <div className="flex flex-wrap gap-4">
                   <Button>
-                    <ArrowLeft /> Book a Demo <ArrowRight />
+                    <ChevronLeft /> Book a Demo <ChevronRight />
                   </Button>
                   <Button variant="secondary">
-                    <ArrowLeft /> Book a Demo <ArrowRight />
+                    <ChevronLeft /> Book a Demo <ChevronRight />
                   </Button>
                   <Button variant="tertiary">
-                    <ArrowLeft /> Book a Demo <ArrowRight />
+                    <ChevronLeft /> Book a Demo <ChevronRight />
                   </Button>
                   <Button variant="ghost">
-                    <ArrowLeft /> Book a Demo <ArrowRight />
+                    <ChevronLeft /> Book a Demo <ChevronRight />
                   </Button>
                 </div>
               </div>
@@ -631,16 +555,16 @@ export default function DesignSystemDemo() {
                 <p className="text-caption text-muted-foreground mb-4">Small size with icons</p>
                 <div className="flex flex-wrap gap-4">
                   <Button size="sm">
-                    <ArrowLeft /> Book a Demo <ArrowRight />
+                    <ChevronLeft /> Book a Demo <ChevronRight />
                   </Button>
                   <Button variant="secondary" size="sm">
-                    <ArrowLeft /> Book a Demo <ArrowRight />
+                    <ChevronLeft /> Book a Demo <ChevronRight />
                   </Button>
                   <Button variant="tertiary" size="sm">
-                    <ArrowLeft /> Book a Demo <ArrowRight />
+                    <ChevronLeft /> Book a Demo <ChevronRight />
                   </Button>
                   <Button variant="ghost" size="sm">
-                    <ArrowLeft /> Book a Demo <ArrowRight />
+                    <ChevronLeft /> Book a Demo <ChevronRight />
                   </Button>
                 </div>
               </div>
@@ -668,10 +592,10 @@ export default function DesignSystemDemo() {
               <div>
                 <p className="text-caption text-muted-foreground mb-4">Icon only</p>
                 <div className="flex flex-wrap gap-4">
-                  <Button size="icon"><MenuIcon /></Button>
-                  <Button variant="secondary" size="icon"><MenuIcon /></Button>
-                  <Button variant="tertiary" size="icon"><MenuIcon /></Button>
-                  <Button variant="ghost" size="icon"><MenuIcon /></Button>
+                  <Button size="icon"><Menu /></Button>
+                  <Button variant="secondary" size="icon"><Menu /></Button>
+                  <Button variant="tertiary" size="icon"><Menu /></Button>
+                  <Button variant="ghost" size="icon"><Menu /></Button>
                 </div>
               </div>
             </div>
@@ -691,10 +615,10 @@ export default function DesignSystemDemo() {
             </div>
 
             <div className="flex flex-wrap gap-4 mt-4">
-              <Badge className="bg-success text-white">Success</Badge>
-              <Badge className="bg-warning text-white">Warning</Badge>
-              <Badge className="bg-error text-white">Error</Badge>
-              <Badge className="bg-info text-white">Info</Badge>
+              <Badge variant="success">Success</Badge>
+              <Badge variant="warning">Warning</Badge>
+              <Badge variant="error">Error</Badge>
+              <Badge variant="info">Info</Badge>
             </div>
           </section>
 
@@ -982,7 +906,7 @@ export default function DesignSystemDemo() {
           <section id="cards">
             <h3 className="text-h4 mb-8">Cards</h3>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Basic Card */}
               <Card>
                 <CardHeader>
@@ -1015,6 +939,30 @@ export default function DesignSystemDemo() {
                 </CardContent>
                 <CardFooter>
                   <Button className="w-full">View Details</Button>
+                </CardFooter>
+              </Card>
+
+              {/* Card with CardAction */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Tennis Fundamentals</CardTitle>
+                  <CardDescription>Learn proper form and game strategy from certified coaches.</CardDescription>
+                  <CardAction>
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontal />
+                    </Button>
+                  </CardAction>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 text-sm">
+                    <p><span className="text-muted-foreground">Ages:</span> 10-14 years</p>
+                    <p><span className="text-muted-foreground">Duration:</span> 2 weeks</p>
+                    <p><span className="text-muted-foreground">Price:</span> $449</p>
+                  </div>
+                </CardContent>
+                <CardFooter className="gap-3">
+                  <Button variant="secondary" className="flex-1">Details</Button>
+                  <Button className="flex-1">Register</Button>
                 </CardFooter>
               </Card>
             </div>
@@ -1380,37 +1328,25 @@ export default function DesignSystemDemo() {
             </p>
 
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-4 p-4 rounded-lg bg-warning-muted">
-                <WarningIcon className="text-warning shrink-0" />
-                <div>
-                  <p className="font-medium text-warning-foreground">Warning</p>
-                  <p className="text-warning-foreground/80 text-sm">Only 3 spots remaining for this camp.</p>
-                </div>
-              </div>
+              <Alert variant="warning">
+                <AlertTitle>Warning</AlertTitle>
+                <AlertDescription>Only 3 spots remaining for this camp.</AlertDescription>
+              </Alert>
 
-              <div className="flex items-center gap-4 p-4 rounded-lg bg-success-muted">
-                <SuccessIcon className="text-success shrink-0" />
-                <div>
-                  <p className="font-medium text-success-foreground">Success!</p>
-                  <p className="text-success-foreground/80 text-sm">Your registration has been confirmed.</p>
-                </div>
-              </div>
+              <Alert variant="success">
+                <AlertTitle>Success!</AlertTitle>
+                <AlertDescription>Your registration has been confirmed.</AlertDescription>
+              </Alert>
 
-              <div className="flex items-center gap-4 p-4 rounded-lg bg-error-muted">
-                <ErrorIcon className="text-error shrink-0" />
-                <div>
-                  <p className="font-medium text-error-foreground">Error</p>
-                  <p className="text-error-foreground/80 text-sm">Something went wrong. Please try again.</p>
-                </div>
-              </div>
+              <Alert variant="error">
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>Something went wrong. Please try again.</AlertDescription>
+              </Alert>
 
-              <div className="flex items-center gap-4 p-4 rounded-lg bg-info-muted">
-                <InfoIcon className="text-info shrink-0" />
-                <div>
-                  <p className="font-medium text-info-foreground">Information</p>
-                  <p className="text-info-foreground/80 text-sm">Registration opens on Monday at 9am.</p>
-                </div>
-              </div>
+              <Alert variant="info">
+                <AlertTitle>Information</AlertTitle>
+                <AlertDescription>Registration opens on Monday at 9am.</AlertDescription>
+              </Alert>
             </div>
           </section>
 
@@ -1694,7 +1630,7 @@ export default function DesignSystemDemo() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="ghost" size="icon">
-                    <InfoIcon className="size-4" />
+                    <Info className="size-4" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
