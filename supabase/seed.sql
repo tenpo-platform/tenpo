@@ -5,6 +5,82 @@
 -- ============================================================================
 
 -- ----------------------------------------------------------------------------
+-- 0. Test Super Admin User
+-- ----------------------------------------------------------------------------
+-- Creates a test SUPER_ADMIN user for local development
+-- Email: admin@tenpo.test
+-- Password: TestAdmin123!
+
+INSERT INTO auth.users (
+  id,
+  instance_id,
+  email,
+  encrypted_password,
+  email_confirmed_at,
+  raw_app_meta_data,
+  raw_user_meta_data,
+  created_at,
+  updated_at,
+  role,
+  aud,
+  confirmation_token,
+  recovery_token,
+  email_change_token_new,
+  email_change_token_current,
+  email_change,
+  phone_change,
+  phone_change_token,
+  reauthentication_token
+) VALUES (
+  'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+  '00000000-0000-0000-0000-000000000000',
+  'admin@tenpo.test',
+  crypt('TestAdmin123!', gen_salt('bf')),
+  now(),
+  '{"provider": "email", "providers": ["email"]}',
+  '{"first_name": "Test", "last_name": "Admin"}',
+  now(),
+  now(),
+  'authenticated',
+  'authenticated',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  ''
+);
+
+-- Identity record required for email/password login
+INSERT INTO auth.identities (
+  id,
+  user_id,
+  provider_id,
+  provider,
+  identity_data,
+  last_sign_in_at,
+  created_at,
+  updated_at
+) VALUES (
+  'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+  'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+  'admin@tenpo.test',
+  'email',
+  '{"sub": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "email": "admin@tenpo.test", "email_verified": true}',
+  now(),
+  now(),
+  now()
+);
+
+-- Profile is created by handle_new_user trigger, but we need to set SUPER_ADMIN role
+-- (trigger assigns PARENT by default, so we replace it)
+DELETE FROM user_roles WHERE user_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+INSERT INTO user_roles (user_id, role, is_primary)
+VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'SUPER_ADMIN', true);
+
+-- ----------------------------------------------------------------------------
 -- 1. Sports Lookup Data
 -- ----------------------------------------------------------------------------
 

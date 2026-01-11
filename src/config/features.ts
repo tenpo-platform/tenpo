@@ -9,9 +9,14 @@
 export const features = {
   /**
    * Enable Cloudflare Turnstile CAPTCHA on auth forms.
-   * Disable for preview deployments where Turnstile isn't configured.
+   *
+   * All environments use real Turnstile widget, but with different keys:
+   * - Local dev: Uses Cloudflare's "always passes" test keys
+   * - Staging/Prod: Uses real Turnstile keys for actual verification
+   *
+   * Set NEXT_PUBLIC_ENABLE_CAPTCHA=false to disable entirely.
    */
-  captcha: process.env.NEXT_PUBLIC_ENABLE_CAPTCHA !== "false",
+  captcha: process.env.NEXT_PUBLIC_ENABLE_CAPTCHA === "true",
 
   /**
    * Enable Sentry error tracking and analytics.

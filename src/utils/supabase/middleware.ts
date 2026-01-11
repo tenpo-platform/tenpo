@@ -40,5 +40,6 @@ export async function updateSession(request: NextRequest) {
   // Refresh session if expired - required for Server Components
   await supabase.auth.getUser();
 
-  return supabaseResponse;
+  // Return both response and client for middleware route protection
+  return { response: supabaseResponse, supabase };
 }

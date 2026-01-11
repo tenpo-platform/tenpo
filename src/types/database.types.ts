@@ -590,6 +590,57 @@ export type Database = {
           },
         ]
       }
+      invites: {
+        Row: {
+          academy_id: string | null
+          accepted_at: string | null
+          created_at: string
+          created_by: string
+          email: string
+          expires_at: string
+          id: string
+          token: string
+          type: string
+        }
+        Insert: {
+          academy_id?: string | null
+          accepted_at?: string | null
+          created_at?: string
+          created_by: string
+          email: string
+          expires_at?: string
+          id?: string
+          token?: string
+          type: string
+        }
+        Update: {
+          academy_id?: string | null
+          accepted_at?: string | null
+          created_at?: string
+          created_by?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          token?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invites_academy_id_fkey"
+            columns: ["academy_id"]
+            isOneToOne: false
+            referencedRelation: "academies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invites_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       locations: {
         Row: {
           address_line1: string | null
@@ -821,37 +872,40 @@ export type Database = {
       }
       profiles: {
         Row: {
+          academy_admin_onboarding_completed: boolean
           avatar_url: string | null
           created_at: string
           deleted_at: string | null
           first_name: string | null
           id: string
           last_name: string | null
-          onboarding_completed: boolean
+          parent_onboarding_completed: boolean
           phone_number: string | null
           timezone: string | null
           updated_at: string
         }
         Insert: {
+          academy_admin_onboarding_completed?: boolean
           avatar_url?: string | null
           created_at?: string
           deleted_at?: string | null
           first_name?: string | null
           id: string
           last_name?: string | null
-          onboarding_completed?: boolean
+          parent_onboarding_completed?: boolean
           phone_number?: string | null
           timezone?: string | null
           updated_at?: string
         }
         Update: {
+          academy_admin_onboarding_completed?: boolean
           avatar_url?: string | null
           created_at?: string
           deleted_at?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
-          onboarding_completed?: boolean
+          parent_onboarding_completed?: boolean
           phone_number?: string | null
           timezone?: string | null
           updated_at?: string
@@ -1134,6 +1188,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_invite: {
+        Args: {
+          p_academy_description?: string
+          p_academy_name?: string
+          p_token: string
+        }
+        Returns: Json
+      }
+      get_invite_context: { Args: { p_token: string }; Returns: Json }
       reserve_ticket: { Args: { p_ticket_id: string }; Returns: string }
     }
     Enums: {
